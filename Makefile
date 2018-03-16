@@ -4,7 +4,7 @@ lex.yy.c: compiler.l
 	./flex compiler.l
 rule.tab.c: rule.y
 	~/bison/bin/bison -d rule.y
-compiler: lex.yy.c
+compiler: rule.tab.c lex.yy.c
 	gcc -o compiler lex.yy.c rule.tab.c libfl.a ~/bison/lib/liby.a 
 
 clean:

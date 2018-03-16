@@ -1,47 +1,49 @@
 %{
+#include "rule.tab.h"
 %}
 
-SEPARATOR [\ \t\,]
+COMMA \,
 END_OF_INSTRUCTION \;
 BEGIN_BLOCK \{
 END_BLOCK \}
 BEGIN_PARENTHESIS \(
 END_PARENTHESIS \)
-CHARACTER [a-zA-Z_0-9]
 NUMBER [0-9]
-END_OF_LINE \n
-ID [a-zA-Z][a-zA-Z0-9_]*
+CHARACTER [a-zA-Z_0-9]
+
+
+%%
+"main" { return tMAIN;}
+"return " { return tRETURN;}
+"if" { return tIF;}
+"else" { return tELSE;}
+"while" { return tWHILE;}
+"for" { return tFOR;}
+"const" { return tCONSTANT;}
+"void" { return tVOID;}
+"int" { return tINTEGER;}
+"char" { return tCHAR;}
+"+" { return tPLUS;}
+"-" { return tMINUS;}
+"*" { return tMULTIPLY;}
+"/" { return tDIVIDE;}
+"=" { return tEQUAL;}
+">" { return tGT;}
+">=" { return tGTE;}
+"<" { return tLT;}
+"<=" { return tLTE;}
+"==" { return tEQUALITY;}
+[a-zA-Z]{CHARACTER}* { return tID;}
+{NUMBER}+ { return tNUMBER; }
+{CHARACTER}+ { return tSTRING; }
+{BEGIN_BLOCK} { return tBEGIN_BLOCK; }
+{END_BLOCK} { return tEND_BLOCK; }
+{END_OF_INSTRUCTION} {return tEND_OF_INSTRUCTION; }
+{BEGIN_PARENTHESIS} { return tBEGIN_PARENTHESIS; }
+{END_PARENTHESIS} { return tEND_PARENTHESIS; }
+[\ \t \n] ;
+
 
 
 %%
 
-{END_OF_LINE} { printf("END_OF_LINE\n"); }
-{SEPARATOR}+	{ printf("SEPARATOR\n"); } 
-{CHARACTER}+ { printf("STRING\n"); }
-{NUMBER}+ { printf("NUMBER\n"); }
-{BEGIN_BLOCK} { printf("BEGIN_BLOCK\n"); }
-{END_BLOCK} { printf("END_BLOCK\n"); }
-{BEGIN_PARENTHESIS} { printf("BEGIN_PARENTHESIS\n"); }
-{END_PARENTHESIS} { printf("END_PARENTHESIS\n"); }
-{ID} { printf("ID\n") ;}
-"main" { printf("MAIN\n") ;}
-"printf" { printf("PRINTF\n") ;}
-"if" { printf("IF\n") ;}
-"else" { printf("ELSE\n") ;}
-"while" { printf("WHILE\n") ;}
-"for" { printf("FOR\n") ;}
-"const" { printf("CONSTANT\n") ;}
-"void" { printf("VOID\n") ;}
-"int" { printf("INTEGER\n") ;}
-"char" { printf("CHAR\n") ;}
-"+" { printf("PLUS\n") ;}
-"-" { printf("MINUS\n") ;}
-"*" { printf("\n") ;}
-"/" { printf("DIVIDE\n") ;}
-"=" { printf("EQUAL\n") ;}
-
-%%
-
-void main(void){
-	yylex();
-}
