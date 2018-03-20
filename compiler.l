@@ -14,7 +14,7 @@ CHARACTER [a-zA-Z_0-9]
 
 %%
 "main" { return tMAIN;}
-"return " { return tRETURN;}
+"return" { return tRETURN;}
 "if" { return tIF;}
 "else" { return tELSE;}
 "while" { return tWHILE;}
@@ -27,12 +27,13 @@ CHARACTER [a-zA-Z_0-9]
 "-" { return tMINUS;}
 "*" { return tMULTIPLY;}
 "/" { return tDIVIDE;}
-"=" { return tEQUAL;}
+"=" { return tASSIGN;}
 ">" { return tGT;}
 ">=" { return tGTE;}
 "<" { return tLT;}
 "<=" { return tLTE;}
 "==" { return tEQUALITY;}
+"\"" { return tQUOTE;}
 [a-zA-Z]{CHARACTER}* { return tID;}
 {NUMBER}+ { return tNUMBER; }
 {CHARACTER}+ { return tSTRING; }
@@ -41,6 +42,7 @@ CHARACTER [a-zA-Z_0-9]
 {END_OF_INSTRUCTION} {return tEND_OF_INSTRUCTION; }
 {BEGIN_PARENTHESIS} { return tBEGIN_PARENTHESIS; }
 {END_PARENTHESIS} { return tEND_PARENTHESIS; }
+"printf" { return tPRINTF; }
 [\ \t \n] ;
 
 
