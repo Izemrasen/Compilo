@@ -9,5 +9,7 @@ compiler: rule.tab.c lex.yy.c
 
 clean:
 	rm -rf compiler lex.yy.c rule.tab.c
-test: compiler
-	./compiler < test.c
+test: compiler ./test.txt
+	./compiler < ./test.txt
+test2: compiler ./test.txt
+	./compiler < ./test.txt 2>&1 | grep -i token
