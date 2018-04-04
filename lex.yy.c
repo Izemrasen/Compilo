@@ -872,7 +872,7 @@ YY_RULE_SETUP
 case 22:
 YY_RULE_SETUP
 #line 37 "compiler.l"
-{ return tID;}
+{ yylval.str = strdup(yytext); return tID; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
@@ -922,7 +922,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 50 "compiler.l"
+#line 48 "compiler.l"
 ECHO;
 	YY_BREAK
 #line 928 "lex.yy.c"
@@ -1930,7 +1930,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 50 "compiler.l"
+#line 48 "compiler.l"
 
 
 
