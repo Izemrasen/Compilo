@@ -70,20 +70,23 @@ Type:
 Definition: 
 	Prefix tID
 	{
-		//printf("<<<<<<<<<<\n");
 		st_add($2, type, depth);
 		printf("Definition\n");
+		st_print();
 	}
-	| Prefix Assignment { printf("Definition\n"); }; // TODO: st_init()
+	| Prefix Assignment { printf("Definition2\n");};
 
 Assignment:
 	tID tASSIGN Expr
 	{
-		printf("AFC R0,%d\n", $3);
-		printf("STORE %d,R0\n", st_get($1));
-		//st_add($1, type, depth);
-		st_init($1);
 		printf("Assignment\n");
+		int position = st_get($1);
+		if (position == SYMBOL_NOT_FOUND)
+			st_add($1, type, depth);
+		printf("AFC R0,%d\n", $3);
+		printf("STORE %d,R0\n", position);
+		st_init($1);
+		st_print();
 	} ;
 
 Assignment_sugar:
