@@ -1,4 +1,3 @@
-int main(){	
-	const char i = 1 + 2;
-	char j;
+int main(){
+	int i = 2;
 }

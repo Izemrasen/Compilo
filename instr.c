@@ -16,9 +16,11 @@ void instr_print()
 			instrs[i].c);
 }
 
-void instr_add(Instruction instr)
+void instr_add(char *op, char *a, char *b, char *c)
 {
-	instrs[instr_position] = instr;
+	Instruction i = {op, a, b, c};
+	printf("ARTHOOOUUUUUUUR!!! '%s  '%s  '%s  '%s\n", op, a, b, c);
+	instrs[instr_position] = i;
 	instr_position++;
 }
 

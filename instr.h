@@ -11,6 +11,6 @@ typedef struct Instruction
 } Instruction;
 
 void instr_print();
-void instr_add(Instruction instr);
+void instr_add(char *op, char *a, char *b, char *c);
 Instruction instr_get(int offset); // Stack-like
 void instr_set(int offset, Instruction instr);

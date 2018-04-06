@@ -67,6 +67,8 @@
 #include <stdio.h>
 #include <string.h>
 #include "symtable.h"
+#include "instr.h"
+
 int yylex(void);
 void yyerror(char*);
 #define YYDEBUG 0
@@ -74,9 +76,10 @@ void yyerror(char*);
 // TODO: handle depth
 char depth = 0;
 Type type;
+char buffer[32];
 
 
-#line 80 "rule.tab.c" /* yacc.c:339  */
+#line 83 "rule.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -151,12 +154,12 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 15 "rule.y" /* yacc.c:355  */
+#line 18 "rule.y" /* yacc.c:355  */
 
 	char *str;
 	int nb;
 
-#line 160 "rule.tab.c" /* yacc.c:355  */
+#line 163 "rule.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -173,7 +176,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 177 "rule.tab.c" /* yacc.c:358  */
+#line 180 "rule.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -473,10 +476,10 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    41,    41,    44,    47,    48,    49,    52,    53,    54,
-      57,    58,    59,    62,    63,    66,    67,    68,    71,    77,
-      80,    93,    94,   101,   102,   105,   106,   109,   112,   120,
-     129,   136,   146,   156,   157,   158,   159,   160,   161,   162
+       0,    44,    44,    47,    50,    51,    52,    55,    56,    57,
+      60,    61,    62,    65,    66,    69,    70,    71,    74,    80,
+      83,    99,   100,   107,   108,   111,   112,   115,   118,   129,
+     140,   149,   162,   174,   186,   198,   199,   200,   201,   202
 };
 #endif
 
@@ -1307,198 +1310,233 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 41 "rule.y" /* yacc.c:1646  */
+#line 44 "rule.y" /* yacc.c:1646  */
     { printf("Main\n"); }
-#line 1313 "rule.tab.c" /* yacc.c:1646  */
+#line 1316 "rule.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 62 "rule.y" /* yacc.c:1646  */
+#line 65 "rule.y" /* yacc.c:1646  */
     { printf("Type\n");}
-#line 1319 "rule.tab.c" /* yacc.c:1646  */
+#line 1322 "rule.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 63 "rule.y" /* yacc.c:1646  */
+#line 66 "rule.y" /* yacc.c:1646  */
     { printf("Constante\n"); }
-#line 1325 "rule.tab.c" /* yacc.c:1646  */
+#line 1328 "rule.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 66 "rule.y" /* yacc.c:1646  */
+#line 69 "rule.y" /* yacc.c:1646  */
     { printf("Integer\n"); type = INTEGER;}
-#line 1331 "rule.tab.c" /* yacc.c:1646  */
+#line 1334 "rule.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 67 "rule.y" /* yacc.c:1646  */
+#line 70 "rule.y" /* yacc.c:1646  */
     { printf("Character\n"); type = CHAR;}
-#line 1337 "rule.tab.c" /* yacc.c:1646  */
+#line 1340 "rule.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 68 "rule.y" /* yacc.c:1646  */
+#line 71 "rule.y" /* yacc.c:1646  */
     { printf("String\n"); type = CHAR;}
-#line 1343 "rule.tab.c" /* yacc.c:1646  */
+#line 1346 "rule.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 72 "rule.y" /* yacc.c:1646  */
+#line 75 "rule.y" /* yacc.c:1646  */
     {
 		st_add((yyvsp[0].str), type, depth);
 		printf("Definition\n");
 		st_print();
 	}
-#line 1353 "rule.tab.c" /* yacc.c:1646  */
+#line 1356 "rule.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 77 "rule.y" /* yacc.c:1646  */
+#line 80 "rule.y" /* yacc.c:1646  */
     { printf("Definition2\n");}
-#line 1359 "rule.tab.c" /* yacc.c:1646  */
+#line 1362 "rule.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 81 "rule.y" /* yacc.c:1646  */
+#line 84 "rule.y" /* yacc.c:1646  */
     {
 		printf("Assignment\n");
 		int position = st_get((yyvsp[-2].str));
 		if (position == SYMBOL_NOT_FOUND)
 			st_add((yyvsp[-2].str), type, depth);
-		printf("AFC R0,%d\n", (yyvsp[0].nb));
-		printf("STORE %d,R0\n", position);
+		sprintf(buffer, "%d", (yyvsp[0].nb));
+		printf("<<<<<id: %s  %s  \n", (yyvsp[-2].str), buffer);
+		instr_add("AFC", "RO", buffer, "");
+		sprintf(buffer, "%d", position);
+		instr_add("STORE", buffer, "R0", "");
 		st_init((yyvsp[-2].str));
 		st_print();
 	}
-#line 1374 "rule.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 25:
-#line 105 "rule.y" /* yacc.c:1646  */
-    { printf("If\n"); }
 #line 1380 "rule.tab.c" /* yacc.c:1646  */
     break;
 
-  case 26:
-#line 106 "rule.y" /* yacc.c:1646  */
-    { printf("If Else\n"); }
+  case 25:
+#line 111 "rule.y" /* yacc.c:1646  */
+    { printf("If\n"); }
 #line 1386 "rule.tab.c" /* yacc.c:1646  */
     break;
 
-  case 27:
-#line 109 "rule.y" /* yacc.c:1646  */
-    { printf("While\n"); }
+  case 26:
+#line 112 "rule.y" /* yacc.c:1646  */
+    { printf("If Else\n"); }
 #line 1392 "rule.tab.c" /* yacc.c:1646  */
     break;
 
+  case 27:
+#line 115 "rule.y" /* yacc.c:1646  */
+    { printf("While\n"); }
+#line 1398 "rule.tab.c" /* yacc.c:1646  */
+    break;
+
   case 28:
-#line 113 "rule.y" /* yacc.c:1646  */
+#line 119 "rule.y" /* yacc.c:1646  */
     {
-		printf("<<<AFC R0,%d\n", (yyvsp[0].nb));
+		sprintf(buffer, "%d", (yyvsp[0].nb));
+		instr_add("AFC", "R0", buffer, "");
 		st_add("", INTEGER, depth);
 		(yyval.nb) = st_get_pos() - 1;
-		printf("STORE %d, R0\n", (yyval.nb));
+		sprintf(buffer, "%d", (yyval.nb));
+		printf("$$: %d\n", (yyval.nb));
+		instr_add("STORE", buffer, "R0", "");
 		st_print();
 	}
-#line 1404 "rule.tab.c" /* yacc.c:1646  */
+#line 1413 "rule.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 121 "rule.y" /* yacc.c:1646  */
-    {
-		printf("AFC R0,%d\n", (yyvsp[0].nb));
-		st_add("", INTEGER, depth);
-		(yyval.nb) = st_get_pos() - 1;
-		printf("AFC R1,%d\n", 0);
-		printf("SOU R0,R1,R0\n");
-		printf("STORE %d, R0\n", (yyval.nb));
-	}
-#line 1417 "rule.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 30:
 #line 130 "rule.y" /* yacc.c:1646  */
     {
-		printf("LOAD R0,%d\n", st_get((yyvsp[0].str)));
+		sprintf(buffer, "%d", (yyvsp[0].nb));
+		instr_add("AFC", "R0", buffer, "");
 		st_add("", INTEGER, depth);
 		(yyval.nb) = st_get_pos() - 1;
-		printf("STORE %d, R0\n", (yyval.nb));
+		instr_add("AFC", "R1", "0", "");
+		instr_add("SOU", "R0", "R1", "R0");
+		sprintf(buffer, "%d", (yyval.nb));
+		instr_add("STORE", buffer, "R0", "");
 	}
 #line 1428 "rule.tab.c" /* yacc.c:1646  */
     break;
 
-  case 31:
-#line 137 "rule.y" /* yacc.c:1646  */
+  case 30:
+#line 141 "rule.y" /* yacc.c:1646  */
     {
-		printf("LOAD R0,%d\n", (yyvsp[-2].nb));
-		printf("LOAD R1,%d\n", (yyvsp[0].nb));
-		printf("ADD R0,R0,R1\n");
-		printf("STORE %d, R0\n", (yyvsp[-2].nb));
+		sprintf(buffer, "%d", st_get((yyvsp[0].str)));
+		instr_add("LOAD", "R0", buffer, "");
+		st_add("", INTEGER, depth);
+		(yyval.nb) = st_get_pos() - 1;
+		sprintf(buffer, "%d", (yyval.nb));
+		instr_add("STORE", buffer, "R0", "");
+	}
+#line 1441 "rule.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 31:
+#line 150 "rule.y" /* yacc.c:1646  */
+    {
+		sprintf(buffer, "%d", (yyvsp[-2].nb));
+		instr_add("LOAD", "R0", buffer, "");
+		sprintf(buffer, "%d", (yyvsp[0].nb));
+		instr_add("LOAD", "R1", buffer, "");
+		instr_add("ADD", "R0", "R0", "R1");
+		sprintf(buffer, "%d", (yyvsp[-2].nb));
+		instr_add("STORE", buffer, "R0", "");
 		// liberer une variable tmp (decrementer l'indice dans table des symboles)
 		st_set_pos(st_get_pos() - 1);
 		(yyval.nb) = (yyvsp[-2].nb);
 	}
-#line 1442 "rule.tab.c" /* yacc.c:1646  */
+#line 1458 "rule.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 147 "rule.y" /* yacc.c:1646  */
+#line 163 "rule.y" /* yacc.c:1646  */
     {
-		printf("LOAD R0,%d\n", (yyvsp[-2].nb));
-		printf("LOAD R1,%d\n", (yyvsp[0].nb));
-		printf("SOU R0,R0,R1\n");
-		printf("STORE %d, R0\n", (yyvsp[-2].nb));
-		// liberer une variable tmp (decrementer l'indice dans table des symboles)
+		sprintf(buffer, "%d", (yyvsp[-2].nb));
+		instr_add("LOAD", "R0", buffer, "");
+		sprintf(buffer, "%d", (yyvsp[0].nb));
+		instr_add("LOAD", "R1", buffer, "");
+		instr_add("SOU", "R0", "R0", "R1");
+		sprintf(buffer, "%d", (yyvsp[-2].nb));
+		instr_add("STORE", buffer, "R0", "");
 		st_set_pos(st_get_pos() - 1);
 		(yyval.nb) = (yyvsp[-2].nb);
 	}
-#line 1456 "rule.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 33:
-#line 156 "rule.y" /* yacc.c:1646  */
-    { printf("Multiplication\n"); }
-#line 1462 "rule.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 34:
-#line 157 "rule.y" /* yacc.c:1646  */
-    { printf("Division\n"); }
-#line 1468 "rule.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 35:
-#line 158 "rule.y" /* yacc.c:1646  */
-    { printf("Condition 1\n"); }
 #line 1474 "rule.tab.c" /* yacc.c:1646  */
     break;
 
+  case 33:
+#line 175 "rule.y" /* yacc.c:1646  */
+    {
+		sprintf(buffer, "%d", (yyvsp[-2].nb));
+		instr_add("LOAD", "R0", buffer, "");
+		sprintf(buffer, "%d", (yyvsp[0].nb));
+		instr_add("LOAD", "R1", buffer, "");
+		instr_add("MUL", "R0", "R0", "R1");
+		sprintf(buffer, "%d", (yyvsp[-2].nb));
+		instr_add("STORE", buffer, "R0", "");
+		st_set_pos(st_get_pos() - 1);
+		(yyval.nb) = (yyvsp[-2].nb);
+	}
+#line 1490 "rule.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 34:
+#line 187 "rule.y" /* yacc.c:1646  */
+    {
+		sprintf(buffer, "%d", (yyvsp[-2].nb));
+		instr_add("LOAD", "R0", buffer, "");
+		sprintf(buffer, "%d", (yyvsp[0].nb));
+		instr_add("LOAD", "R1", buffer, "");
+		instr_add("DIV", "R0", "R0", "R1");
+		sprintf(buffer, "%d", (yyvsp[-2].nb));
+		instr_add("STORE", buffer, "R0", "");
+		st_set_pos(st_get_pos() - 1);
+		(yyval.nb) = (yyvsp[-2].nb);
+	}
+#line 1506 "rule.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 35:
+#line 198 "rule.y" /* yacc.c:1646  */
+    { printf("Condition 1\n"); }
+#line 1512 "rule.tab.c" /* yacc.c:1646  */
+    break;
+
   case 36:
-#line 159 "rule.y" /* yacc.c:1646  */
+#line 199 "rule.y" /* yacc.c:1646  */
     { printf("Condition 2\n"); }
-#line 1480 "rule.tab.c" /* yacc.c:1646  */
+#line 1518 "rule.tab.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 160 "rule.y" /* yacc.c:1646  */
+#line 200 "rule.y" /* yacc.c:1646  */
     { printf("Condition 3\n"); }
-#line 1486 "rule.tab.c" /* yacc.c:1646  */
+#line 1524 "rule.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 161 "rule.y" /* yacc.c:1646  */
+#line 201 "rule.y" /* yacc.c:1646  */
     { printf("Condition 4\n"); }
-#line 1492 "rule.tab.c" /* yacc.c:1646  */
+#line 1530 "rule.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 162 "rule.y" /* yacc.c:1646  */
+#line 202 "rule.y" /* yacc.c:1646  */
     { printf("Egalité\n"); }
-#line 1498 "rule.tab.c" /* yacc.c:1646  */
+#line 1536 "rule.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1502 "rule.tab.c" /* yacc.c:1646  */
+#line 1540 "rule.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1726,7 +1764,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 164 "rule.y" /* yacc.c:1906  */
+#line 204 "rule.y" /* yacc.c:1906  */
 
 
 extern int yydebug;
@@ -1737,5 +1775,7 @@ int main(){
 	#endif
 
 	yyparse();
+
+	instr_print();
 }
 

@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 #include "symtable.h"
+#include "instr.h"
+
 int yylex(void);
 void yyerror(char*);
 #define YYDEBUG 0
@@ -9,7 +11,9 @@ void yyerror(char*);
 // TODO: handle depth
 char depth = 0;
 Type type;
+char buffer[32];
 
+// TODO: motherfucking $1 returns bullshit
 %}
 
 %union{
@@ -83,8 +87,11 @@ Assignment:
 		int position = st_get($1);
 		if (position == SYMBOL_NOT_FOUND)
 			st_add($1, type, depth);
-		printf("AFC R0,%d\n", $3);
-		printf("STORE %d,R0\n", position);
+		sprintf(buffer, "%d", $3);
+		printf("<<<<<id: %s  %s  \n", $1, buffer);
+		instr_add("AFC", "RO", buffer, "");
+		sprintf(buffer, "%d", position);
+		instr_add("STORE", buffer, "R0", "");
 		st_init($1);
 		st_print();
 	} ;
@@ -111,50 +118,84 @@ While:
 Expr:
 	tNUMBER
 	{
-		printf("<<<AFC R0,%d\n", $1);
+		sprintf(buffer, "%d", $1);
+		instr_add("AFC", "R0", buffer, "");
 		st_add("", INTEGER, depth);
 		$$ = st_get_pos() - 1;
-		printf("STORE %d, R0\n", $$);
+		sprintf(buffer, "%d", $$);
+		printf("$$: %d\n", $$);
+		instr_add("STORE", buffer, "R0", "");
 		st_print();
 	}
 	| tMINUS tNUMBER
 	{
-		printf("AFC R0,%d\n", $2);
+		sprintf(buffer, "%d", $2);
+		instr_add("AFC", "R0", buffer, "");
 		st_add("", INTEGER, depth);
 		$$ = st_get_pos() - 1;
-		printf("AFC R1,%d\n", 0);
-		printf("SOU R0,R1,R0\n");
-		printf("STORE %d, R0\n", $$);
+		instr_add("AFC", "R1", "0", "");
+		instr_add("SOU", "R0", "R1", "R0");
+		sprintf(buffer, "%d", $$);
+		instr_add("STORE", buffer, "R0", "");
 	}
 	| tID
 	{
-		printf("LOAD R0,%d\n", st_get($1));
+		sprintf(buffer, "%d", st_get($1));
+		instr_add("LOAD", "R0", buffer, "");
 		st_add("", INTEGER, depth);
 		$$ = st_get_pos() - 1;
-		printf("STORE %d, R0\n", $$);
+		sprintf(buffer, "%d", $$);
+		instr_add("STORE", buffer, "R0", "");
 	}
 	| Expr tPLUS Expr
 	{
-		printf("LOAD R0,%d\n", $1);
-		printf("LOAD R1,%d\n", $3);
-		printf("ADD R0,R0,R1\n");
-		printf("STORE %d, R0\n", $1);
+		sprintf(buffer, "%d", $1);
+		instr_add("LOAD", "R0", buffer, "");
+		sprintf(buffer, "%d", $3);
+		instr_add("LOAD", "R1", buffer, "");
+		instr_add("ADD", "R0", "R0", "R1");
+		sprintf(buffer, "%d", $1);
+		instr_add("STORE", buffer, "R0", "");
 		// liberer une variable tmp (decrementer l'indice dans table des symboles)
 		st_set_pos(st_get_pos() - 1);
 		$$ = $1;
 	}
 	| Expr tMINUS Expr
 	{
-		printf("LOAD R0,%d\n", $1);
-		printf("LOAD R1,%d\n", $3);
-		printf("SOU R0,R0,R1\n");
-		printf("STORE %d, R0\n", $1);
-		// liberer une variable tmp (decrementer l'indice dans table des symboles)
+		sprintf(buffer, "%d", $1);
+		instr_add("LOAD", "R0", buffer, "");
+		sprintf(buffer, "%d", $3);
+		instr_add("LOAD", "R1", buffer, "");
+		instr_add("SOU", "R0", "R0", "R1");
+		sprintf(buffer, "%d", $1);
+		instr_add("STORE", buffer, "R0", "");
 		st_set_pos(st_get_pos() - 1);
 		$$ = $1;
 	}
-	| Expr tMULTIPLY Expr { printf("Multiplication\n"); }
-	| Expr tDIVIDE Expr { printf("Division\n"); }
+	| Expr tMULTIPLY Expr
+	{
+		sprintf(buffer, "%d", $1);
+		instr_add("LOAD", "R0", buffer, "");
+		sprintf(buffer, "%d", $3);
+		instr_add("LOAD", "R1", buffer, "");
+		instr_add("MUL", "R0", "R0", "R1");
+		sprintf(buffer, "%d", $1);
+		instr_add("STORE", buffer, "R0", "");
+		st_set_pos(st_get_pos() - 1);
+		$$ = $1;
+	}
+	| Expr tDIVIDE Expr
+	{
+		sprintf(buffer, "%d", $1);
+		instr_add("LOAD", "R0", buffer, "");
+		sprintf(buffer, "%d", $3);
+		instr_add("LOAD", "R1", buffer, "");
+		instr_add("DIV", "R0", "R0", "R1");
+		sprintf(buffer, "%d", $1);
+		instr_add("STORE", buffer, "R0", "");
+		st_set_pos(st_get_pos() - 1);
+		$$ = $1;
+	}
 	| Expr tGT Expr { printf("Condition 1\n"); }
 	| Expr tGTE Expr { printf("Condition 2\n"); }
 	| Expr tLT Expr { printf("Condition 3\n"); }
@@ -171,5 +212,7 @@ int main(){
 	#endif
 
 	yyparse();
+
+	instr_print();
 }
 
