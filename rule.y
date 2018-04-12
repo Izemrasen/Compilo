@@ -13,7 +13,7 @@ char depth = 0;
 Type type;
 char buffer[32];
 
-// TODO: motherfucking $1 returns bullshit
+// TODO: $1 returns bullshit
 %}
 
 %union{
@@ -85,8 +85,10 @@ Assignment:
 	{
 		printf("Assignment\n");
 		int position = st_get($1);
-		if (position == SYMBOL_NOT_FOUND)
+		if (position == SYMBOL_NOT_FOUND) {
 			st_add($1, type, depth);
+			position = st_get($1);
+		}
 		sprintf(buffer, "%d", $3);
 		printf("<<<<<id: %s  %s  \n", $1, buffer);
 		instr_add("AFC", "RO", buffer, "");

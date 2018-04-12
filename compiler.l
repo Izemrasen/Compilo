@@ -35,7 +35,7 @@ CHARACTER [a-zA-Z_0-9]
 "==" { return tEQUALITY;}
 "\"" { return tQUOTE;}
 [a-zA-Z]{CHARACTER}* { yylval.str = strdup(yytext); return tID; }
-{NUMBER}+ { return tNUMBER; }
+{NUMBER}+ { yylval.nb = atoi(yytext); return tNUMBER; }
 {CHARACTER}+ { return tSTRING; }
 {BEGIN_BLOCK} { return tBEGIN_BLOCK; }
 {END_BLOCK} { return tEND_BLOCK; }

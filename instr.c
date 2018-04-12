@@ -10,18 +10,21 @@ int instr_position = 0;
 void instr_print()
 {
 	int i;
-	printf("Instrs: \n");
+	printf("Instrs (%d): \n", instr_position);
 	for (i = 0; i < instr_position; i++)
-		printf("%s\t%s\t%s\t%s\n", instrs[i].op, instrs[i].a, instrs[i].b,
+		printf("'%s\t'%s\t'%s\t'%s\n", instrs[i].op, instrs[i].a, instrs[i].b,
 			instrs[i].c);
 }
 
 void instr_add(char *op, char *a, char *b, char *c)
 {
-	Instruction i = {op, a, b, c};
-	printf("ARTHOOOUUUUUUUR!!! '%s  '%s  '%s  '%s\n", op, a, b, c);
+	Instruction i = {strdup(op), strdup(a), strdup(b), strdup(c)};
+	//printf("ARTHOOOUUUUUUUR!!! (%d) '%s  '%s  '%s  '%s\n", instr_position, i.op, i.a, i.b, i.c);
 	instrs[instr_position] = i;
 	instr_position++;
+	//printf("===========================\n");
+	//instr_print();
+	//printf("===========================\n");
 }
 
 Instruction instr_get(int offset) // Stack-like

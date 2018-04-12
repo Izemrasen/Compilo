@@ -877,7 +877,7 @@ YY_RULE_SETUP
 case 23:
 YY_RULE_SETUP
 #line 38 "compiler.l"
-{ return tNUMBER; }
+{ yylval.nb = atoi(yytext); return tNUMBER; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
