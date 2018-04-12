@@ -5,7 +5,6 @@ Terminaux inutilisés dans la grammaire
    tCOMMA
    tPRINTF
    tQUOTE
-   tTRUC
 
 
 État 43 conflits: 1 décalage/réduction
@@ -19,90 +18,95 @@ Grammaire
 
     2 Body: tBEGIN_BLOCK Instrs tEND_BLOCK
 
-    3 Instrs: Instr Instrs
-    4       | Block Instrs
-    5       | %empty
+    3 Body_if: Instr
+    4        | Body
 
-    6 Instr: Definition tEND_OF_INSTRUCTION
-    7      | Assignment tEND_OF_INSTRUCTION
-    8      | tEND_OF_INSTRUCTION
+    5 Instrs: Instr Instrs
+    6       | Block Instrs
+    7       | %empty
 
-    9 Block: If
-   10      | While
-   11      | For
+    8 Instr: Definition tEND_OF_INSTRUCTION
+    9      | Assignment tEND_OF_INSTRUCTION
+   10      | tEND_OF_INSTRUCTION
 
-   12 Prefix: Type
-   13       | tCONSTANT Type
+   11 Block: If
+   12      | While
+   13      | For
 
-   14 Type: tINTEGER
-   15     | tCHAR
-   16     | tSTRING
+   14 Prefix: Type
+   15       | tCONSTANT Type
 
-   17 Definition: Prefix tID
-   18           | Prefix Assignment
+   16 Type: tINTEGER
+   17     | tCHAR
+   18     | tSTRING
 
-   19 Assignment: tID tASSIGN Expr
+   19 Definition: Prefix tID
+   20           | Prefix Assignment
 
-   20 Assignment_sugar: tID tPLUS tPLUS
-   21                 | tID tMINUS tMINUS
+   21 Assignment: tID tASSIGN Expr
 
-   22 For: tFOR tBEGIN_PARENTHESIS Assignment tEND_OF_INSTRUCTION Expr tEND_OF_INSTRUCTION Assignment tEND_PARENTHESIS Body
-   23    | tFOR tBEGIN_PARENTHESIS Assignment Expr tEND_OF_INSTRUCTION Assignment_sugar tEND_PARENTHESIS Body
+   22 Assignment_sugar: tID tPLUS tPLUS
+   23                 | tID tMINUS tMINUS
 
-   24 If: tIF tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS Body
-   25   | tIF tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS Body tELSE Body
+   24 For: tFOR tBEGIN_PARENTHESIS Assignment tEND_OF_INSTRUCTION Expr tEND_OF_INSTRUCTION Assignment tEND_PARENTHESIS Body
+   25    | tFOR tBEGIN_PARENTHESIS Assignment Expr tEND_OF_INSTRUCTION Assignment_sugar tEND_PARENTHESIS Body
 
-   26 While: tWHILE tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS Body
+   26 If: tIF tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS If_act Body_if
+   27   | tIF tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS If_act Body_if tELSE Body_if
 
-   27 Expr: tNUMBER
-   28     | tMINUS tNUMBER
-   29     | tID
-   30     | Expr tPLUS Expr
-   31     | Expr tMINUS Expr
-   32     | Expr tMULTIPLY Expr
-   33     | Expr tDIVIDE Expr
-   34     | Expr tGT Expr
-   35     | Expr tGTE Expr
-   36     | Expr tLT Expr
-   37     | Expr tLTE Expr
-   38     | Expr tEQUALITY Expr
+   28 If_act: %empty
+
+   29 While: tWHILE tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS Body
+
+   30 Expr: tNUMBER
+   31     | tMINUS tNUMBER
+   32     | tID
+   33     | Expr tPLUS Expr
+   34     | Expr tMINUS Expr
+   35     | Expr tMULTIPLY Expr
+   36     | Expr tDIVIDE Expr
+   37     | Expr tGT Expr
+   38     | Expr tGTE Expr
+   39     | Expr tLT Expr
+   40     | Expr tLTE Expr
+   41     | Expr tEQUALITY Expr
 
 
 Terminaux, suivis des règles où ils apparaissent
 
 $end (0) 0
 error (256)
-tINTEGER (258) 1 14
-tCONSTANT (259) 13
-tCHAR (260) 15
-tSTRING (261) 16
-tNUMBER (262) 27 28
-tID (263) 17 19 20 21 29
+tINTEGER (258) 1 16
+tCONSTANT (259) 15
+tCHAR (260) 17
+tSTRING (261) 18
+tNUMBER (262) 30 31
+tID (263) 19 21 22 23 32
 tVOID (264)
-tIF (265) 24 25
-tELSE (266) 25
-tWHILE (267) 26
-tFOR (268) 22 23
+tIF (265) 26 27
+tELSE (266) 27
+tWHILE (267) 29
+tFOR (268) 24 25
 tMAIN (269) 1
 tRETURN (270)
 tCOMMA (271)
-tBEGIN_PARENTHESIS (272) 1 22 23 24 25 26
-tEND_PARENTHESIS (273) 1 22 23 24 25 26
+tBEGIN_PARENTHESIS (272) 1 24 25 26 27 29
+tEND_PARENTHESIS (273) 1 24 25 26 27 29
 tBEGIN_BLOCK (274) 2
 tEND_BLOCK (275) 2
-tEND_OF_INSTRUCTION (276) 6 7 8 22 23
+tEND_OF_INSTRUCTION (276) 8 9 10 24 25
 tPRINTF (277)
 tQUOTE (278)
-tPLUS (279) 20 30
-tMINUS (280) 21 28 31
-tMULTIPLY (281) 32
-tDIVIDE (282) 33
-tASSIGN (283) 19
-tGT (284) 34
-tGTE (285) 35
-tLT (286) 36
-tLTE (287) 37
-tEQUALITY (288) 38
+tPLUS (279) 22 33
+tMINUS (280) 23 31 34
+tMULTIPLY (281) 35
+tDIVIDE (282) 36
+tASSIGN (283) 21
+tGT (284) 37
+tGTE (285) 38
+tLT (286) 39
+tLTE (287) 40
+tEQUALITY (288) 41
 tTRUC (289)
 
 
@@ -113,32 +117,36 @@ $accept (35)
 start (36)
     à gauche: 1, à droite: 0
 Body (37)
-    à gauche: 2, à droite: 1 22 23 24 25 26
-Instrs (38)
-    à gauche: 3 4 5, à droite: 2 3 4
-Instr (39)
-    à gauche: 6 7 8, à droite: 3
-Block (40)
-    à gauche: 9 10 11, à droite: 4
-Prefix (41)
-    à gauche: 12 13, à droite: 17 18
-Type (42)
-    à gauche: 14 15 16, à droite: 12 13
-Definition (43)
-    à gauche: 17 18, à droite: 6
-Assignment (44)
-    à gauche: 19, à droite: 7 18 22 23
-Assignment_sugar (45)
-    à gauche: 20 21, à droite: 23
-For (46)
-    à gauche: 22 23, à droite: 11
-If (47)
-    à gauche: 24 25, à droite: 9
-While (48)
-    à gauche: 26, à droite: 10
-Expr (49)
-    à gauche: 27 28 29 30 31 32 33 34 35 36 37 38, à droite: 19 22
-    23 24 25 26 30 31 32 33 34 35 36 37 38
+    à gauche: 2, à droite: 1 4 24 25 29
+Body_if (38)
+    à gauche: 3 4, à droite: 26 27
+Instrs (39)
+    à gauche: 5 6 7, à droite: 2 5 6
+Instr (40)
+    à gauche: 8 9 10, à droite: 3 5
+Block (41)
+    à gauche: 11 12 13, à droite: 6
+Prefix (42)
+    à gauche: 14 15, à droite: 19 20
+Type (43)
+    à gauche: 16 17 18, à droite: 14 15
+Definition (44)
+    à gauche: 19 20, à droite: 8
+Assignment (45)
+    à gauche: 21, à droite: 9 20 24 25
+Assignment_sugar (46)
+    à gauche: 22 23, à droite: 25
+For (47)
+    à gauche: 24 25, à droite: 13
+If (48)
+    à gauche: 26 27, à droite: 11
+If_act (49)
+    à gauche: 28, à droite: 26 27
+While (50)
+    à gauche: 29, à droite: 12
+Expr (51)
+    à gauche: 30 31 32 33 34 35 36 37 38 39 40 41, à droite: 21 24
+    25 26 27 29 33 34 35 36 37 38 39 40 41
 
 
 État 0
@@ -208,7 +216,7 @@ Expr (49)
     tFOR                 décalage et aller à l'état 16
     tEND_OF_INSTRUCTION  décalage et aller à l'état 17
 
-    $défaut  réduction par utilisation de la règle 5 (Instrs)
+    $défaut  réduction par utilisation de la règle 7 (Instrs)
 
     Instrs      aller à l'état 18
     Instr       aller à l'état 19
@@ -231,14 +239,14 @@ Expr (49)
 
 État 9
 
-   14 Type: tINTEGER .
+   16 Type: tINTEGER .
 
-    $défaut  réduction par utilisation de la règle 14 (Type)
+    $défaut  réduction par utilisation de la règle 16 (Type)
 
 
 État 10
 
-   13 Prefix: tCONSTANT . Type
+   15 Prefix: tCONSTANT . Type
 
     tINTEGER  décalage et aller à l'état 9
     tCHAR     décalage et aller à l'état 11
@@ -249,53 +257,53 @@ Expr (49)
 
 État 11
 
-   15 Type: tCHAR .
+   17 Type: tCHAR .
 
-    $défaut  réduction par utilisation de la règle 15 (Type)
+    $défaut  réduction par utilisation de la règle 17 (Type)
 
 
 État 12
 
-   16 Type: tSTRING .
+   18 Type: tSTRING .
 
-    $défaut  réduction par utilisation de la règle 16 (Type)
+    $défaut  réduction par utilisation de la règle 18 (Type)
 
 
 État 13
 
-   19 Assignment: tID . tASSIGN Expr
+   21 Assignment: tID . tASSIGN Expr
 
     tASSIGN  décalage et aller à l'état 29
 
 
 État 14
 
-   24 If: tIF . tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS Body
-   25   | tIF . tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS Body tELSE Body
+   26 If: tIF . tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS If_act Body_if
+   27   | tIF . tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS If_act Body_if tELSE Body_if
 
     tBEGIN_PARENTHESIS  décalage et aller à l'état 30
 
 
 État 15
 
-   26 While: tWHILE . tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS Body
+   29 While: tWHILE . tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS Body
 
     tBEGIN_PARENTHESIS  décalage et aller à l'état 31
 
 
 État 16
 
-   22 For: tFOR . tBEGIN_PARENTHESIS Assignment tEND_OF_INSTRUCTION Expr tEND_OF_INSTRUCTION Assignment tEND_PARENTHESIS Body
-   23    | tFOR . tBEGIN_PARENTHESIS Assignment Expr tEND_OF_INSTRUCTION Assignment_sugar tEND_PARENTHESIS Body
+   24 For: tFOR . tBEGIN_PARENTHESIS Assignment tEND_OF_INSTRUCTION Expr tEND_OF_INSTRUCTION Assignment tEND_PARENTHESIS Body
+   25    | tFOR . tBEGIN_PARENTHESIS Assignment Expr tEND_OF_INSTRUCTION Assignment_sugar tEND_PARENTHESIS Body
 
     tBEGIN_PARENTHESIS  décalage et aller à l'état 32
 
 
 État 17
 
-    8 Instr: tEND_OF_INSTRUCTION .
+   10 Instr: tEND_OF_INSTRUCTION .
 
-    $défaut  réduction par utilisation de la règle 8 (Instr)
+    $défaut  réduction par utilisation de la règle 10 (Instr)
 
 
 État 18
@@ -307,7 +315,7 @@ Expr (49)
 
 État 19
 
-    3 Instrs: Instr . Instrs
+    5 Instrs: Instr . Instrs
 
     tINTEGER             décalage et aller à l'état 9
     tCONSTANT            décalage et aller à l'état 10
@@ -319,7 +327,7 @@ Expr (49)
     tFOR                 décalage et aller à l'état 16
     tEND_OF_INSTRUCTION  décalage et aller à l'état 17
 
-    $défaut  réduction par utilisation de la règle 5 (Instrs)
+    $défaut  réduction par utilisation de la règle 7 (Instrs)
 
     Instrs      aller à l'état 34
     Instr       aller à l'état 19
@@ -335,7 +343,7 @@ Expr (49)
 
 État 20
 
-    4 Instrs: Block . Instrs
+    6 Instrs: Block . Instrs
 
     tINTEGER             décalage et aller à l'état 9
     tCONSTANT            décalage et aller à l'état 10
@@ -347,7 +355,7 @@ Expr (49)
     tFOR                 décalage et aller à l'état 16
     tEND_OF_INSTRUCTION  décalage et aller à l'état 17
 
-    $défaut  réduction par utilisation de la règle 5 (Instrs)
+    $défaut  réduction par utilisation de la règle 7 (Instrs)
 
     Instrs      aller à l'état 35
     Instr       aller à l'état 19
@@ -363,8 +371,8 @@ Expr (49)
 
 État 21
 
-   17 Definition: Prefix . tID
-   18           | Prefix . Assignment
+   19 Definition: Prefix . tID
+   20           | Prefix . Assignment
 
     tID  décalage et aller à l'état 36
 
@@ -373,56 +381,56 @@ Expr (49)
 
 État 22
 
-   12 Prefix: Type .
+   14 Prefix: Type .
 
-    $défaut  réduction par utilisation de la règle 12 (Prefix)
+    $défaut  réduction par utilisation de la règle 14 (Prefix)
 
 
 État 23
 
-    6 Instr: Definition . tEND_OF_INSTRUCTION
+    8 Instr: Definition . tEND_OF_INSTRUCTION
 
     tEND_OF_INSTRUCTION  décalage et aller à l'état 38
 
 
 État 24
 
-    7 Instr: Assignment . tEND_OF_INSTRUCTION
+    9 Instr: Assignment . tEND_OF_INSTRUCTION
 
     tEND_OF_INSTRUCTION  décalage et aller à l'état 39
 
 
 État 25
 
-   11 Block: For .
+   13 Block: For .
 
-    $défaut  réduction par utilisation de la règle 11 (Block)
+    $défaut  réduction par utilisation de la règle 13 (Block)
 
 
 État 26
 
-    9 Block: If .
+   11 Block: If .
 
-    $défaut  réduction par utilisation de la règle 9 (Block)
+    $défaut  réduction par utilisation de la règle 11 (Block)
 
 
 État 27
 
-   10 Block: While .
+   12 Block: While .
 
-    $défaut  réduction par utilisation de la règle 10 (Block)
+    $défaut  réduction par utilisation de la règle 12 (Block)
 
 
 État 28
 
-   13 Prefix: tCONSTANT Type .
+   15 Prefix: tCONSTANT Type .
 
-    $défaut  réduction par utilisation de la règle 13 (Prefix)
+    $défaut  réduction par utilisation de la règle 15 (Prefix)
 
 
 État 29
 
-   19 Assignment: tID tASSIGN . Expr
+   21 Assignment: tID tASSIGN . Expr
 
     tNUMBER  décalage et aller à l'état 40
     tID      décalage et aller à l'état 41
@@ -433,8 +441,8 @@ Expr (49)
 
 État 30
 
-   24 If: tIF tBEGIN_PARENTHESIS . Expr tEND_PARENTHESIS Body
-   25   | tIF tBEGIN_PARENTHESIS . Expr tEND_PARENTHESIS Body tELSE Body
+   26 If: tIF tBEGIN_PARENTHESIS . Expr tEND_PARENTHESIS If_act Body_if
+   27   | tIF tBEGIN_PARENTHESIS . Expr tEND_PARENTHESIS If_act Body_if tELSE Body_if
 
     tNUMBER  décalage et aller à l'état 40
     tID      décalage et aller à l'état 41
@@ -445,7 +453,7 @@ Expr (49)
 
 État 31
 
-   26 While: tWHILE tBEGIN_PARENTHESIS . Expr tEND_PARENTHESIS Body
+   29 While: tWHILE tBEGIN_PARENTHESIS . Expr tEND_PARENTHESIS Body
 
     tNUMBER  décalage et aller à l'état 40
     tID      décalage et aller à l'état 41
@@ -456,8 +464,8 @@ Expr (49)
 
 État 32
 
-   22 For: tFOR tBEGIN_PARENTHESIS . Assignment tEND_OF_INSTRUCTION Expr tEND_OF_INSTRUCTION Assignment tEND_PARENTHESIS Body
-   23    | tFOR tBEGIN_PARENTHESIS . Assignment Expr tEND_OF_INSTRUCTION Assignment_sugar tEND_PARENTHESIS Body
+   24 For: tFOR tBEGIN_PARENTHESIS . Assignment tEND_OF_INSTRUCTION Expr tEND_OF_INSTRUCTION Assignment tEND_PARENTHESIS Body
+   25    | tFOR tBEGIN_PARENTHESIS . Assignment Expr tEND_OF_INSTRUCTION Assignment_sugar tEND_PARENTHESIS Body
 
     tID  décalage et aller à l'état 13
 
@@ -473,82 +481,82 @@ Expr (49)
 
 État 34
 
-    3 Instrs: Instr Instrs .
+    5 Instrs: Instr Instrs .
 
-    $défaut  réduction par utilisation de la règle 3 (Instrs)
+    $défaut  réduction par utilisation de la règle 5 (Instrs)
 
 
 État 35
 
-    4 Instrs: Block Instrs .
+    6 Instrs: Block Instrs .
 
-    $défaut  réduction par utilisation de la règle 4 (Instrs)
+    $défaut  réduction par utilisation de la règle 6 (Instrs)
 
 
 État 36
 
-   17 Definition: Prefix tID .
-   19 Assignment: tID . tASSIGN Expr
+   19 Definition: Prefix tID .
+   21 Assignment: tID . tASSIGN Expr
 
     tASSIGN  décalage et aller à l'état 29
 
-    $défaut  réduction par utilisation de la règle 17 (Definition)
+    $défaut  réduction par utilisation de la règle 19 (Definition)
 
 
 État 37
 
-   18 Definition: Prefix Assignment .
+   20 Definition: Prefix Assignment .
 
-    $défaut  réduction par utilisation de la règle 18 (Definition)
+    $défaut  réduction par utilisation de la règle 20 (Definition)
 
 
 État 38
 
-    6 Instr: Definition tEND_OF_INSTRUCTION .
+    8 Instr: Definition tEND_OF_INSTRUCTION .
 
-    $défaut  réduction par utilisation de la règle 6 (Instr)
+    $défaut  réduction par utilisation de la règle 8 (Instr)
 
 
 État 39
 
-    7 Instr: Assignment tEND_OF_INSTRUCTION .
+    9 Instr: Assignment tEND_OF_INSTRUCTION .
 
-    $défaut  réduction par utilisation de la règle 7 (Instr)
+    $défaut  réduction par utilisation de la règle 9 (Instr)
 
 
 État 40
 
-   27 Expr: tNUMBER .
+   30 Expr: tNUMBER .
 
-    $défaut  réduction par utilisation de la règle 27 (Expr)
+    $défaut  réduction par utilisation de la règle 30 (Expr)
 
 
 État 41
 
-   29 Expr: tID .
+   32 Expr: tID .
 
-    $défaut  réduction par utilisation de la règle 29 (Expr)
+    $défaut  réduction par utilisation de la règle 32 (Expr)
 
 
 État 42
 
-   28 Expr: tMINUS . tNUMBER
+   31 Expr: tMINUS . tNUMBER
 
     tNUMBER  décalage et aller à l'état 47
 
 
 État 43
 
-   19 Assignment: tID tASSIGN Expr .
-   30 Expr: Expr . tPLUS Expr
-   31     | Expr . tMINUS Expr
-   32     | Expr . tMULTIPLY Expr
-   33     | Expr . tDIVIDE Expr
-   34     | Expr . tGT Expr
-   35     | Expr . tGTE Expr
-   36     | Expr . tLT Expr
-   37     | Expr . tLTE Expr
-   38     | Expr . tEQUALITY Expr
+   21 Assignment: tID tASSIGN Expr .
+   33 Expr: Expr . tPLUS Expr
+   34     | Expr . tMINUS Expr
+   35     | Expr . tMULTIPLY Expr
+   36     | Expr . tDIVIDE Expr
+   37     | Expr . tGT Expr
+   38     | Expr . tGTE Expr
+   39     | Expr . tLT Expr
+   40     | Expr . tLTE Expr
+   41     | Expr . tEQUALITY Expr
 
     tPLUS      décalage et aller à l'état 48
     tMINUS     décalage et aller à l'état 49
@@ -560,23 +568,23 @@ Expr (49)
     tLTE       décalage et aller à l'état 55
     tEQUALITY  décalage et aller à l'état 56
 
-    tMINUS    [réduction par utilisation de la règle 19 (Assignment)]
-    $défaut  réduction par utilisation de la règle 19 (Assignment)
+    tMINUS    [réduction par utilisation de la règle 21 (Assignment)]
+    $défaut  réduction par utilisation de la règle 21 (Assignment)
 
 
 État 44
 
-   24 If: tIF tBEGIN_PARENTHESIS Expr . tEND_PARENTHESIS Body
-   25   | tIF tBEGIN_PARENTHESIS Expr . tEND_PARENTHESIS Body tELSE Body
-   30 Expr: Expr . tPLUS Expr
-   31     | Expr . tMINUS Expr
-   32     | Expr . tMULTIPLY Expr
-   33     | Expr . tDIVIDE Expr
-   34     | Expr . tGT Expr
-   35     | Expr . tGTE Expr
-   36     | Expr . tLT Expr
-   37     | Expr . tLTE Expr
-   38     | Expr . tEQUALITY Expr
+   26 If: tIF tBEGIN_PARENTHESIS Expr . tEND_PARENTHESIS If_act Body_if
+   27   | tIF tBEGIN_PARENTHESIS Expr . tEND_PARENTHESIS If_act Body_if tELSE Body_if
+   33 Expr: Expr . tPLUS Expr
+   34     | Expr . tMINUS Expr
+   35     | Expr . tMULTIPLY Expr
+   36     | Expr . tDIVIDE Expr
+   37     | Expr . tGT Expr
+   38     | Expr . tGTE Expr
+   39     | Expr . tLT Expr
+   40     | Expr . tLTE Expr
+   41     | Expr . tEQUALITY Expr
 
     tEND_PARENTHESIS  décalage et aller à l'état 57
     tPLUS             décalage et aller à l'état 48
@@ -592,16 +600,16 @@ Expr (49)
 
 État 45
 
-   26 While: tWHILE tBEGIN_PARENTHESIS Expr . tEND_PARENTHESIS Body
-   30 Expr: Expr . tPLUS Expr
-   31     | Expr . tMINUS Expr
-   32     | Expr . tMULTIPLY Expr
-   33     | Expr . tDIVIDE Expr
-   34     | Expr . tGT Expr
-   35     | Expr . tGTE Expr
-   36     | Expr . tLT Expr
-   37     | Expr . tLTE Expr
-   38     | Expr . tEQUALITY Expr
+   29 While: tWHILE tBEGIN_PARENTHESIS Expr . tEND_PARENTHESIS Body
+   33 Expr: Expr . tPLUS Expr
+   34     | Expr . tMINUS Expr
+   35     | Expr . tMULTIPLY Expr
+   36     | Expr . tDIVIDE Expr
+   37     | Expr . tGT Expr
+   38     | Expr . tGTE Expr
+   39     | Expr . tLT Expr
+   40     | Expr . tLTE Expr
+   41     | Expr . tEQUALITY Expr
 
     tEND_PARENTHESIS  décalage et aller à l'état 58
     tPLUS             décalage et aller à l'état 48
@@ -617,8 +625,8 @@ Expr (49)
 
 État 46
 
-   22 For: tFOR tBEGIN_PARENTHESIS Assignment . tEND_OF_INSTRUCTION Expr tEND_OF_INSTRUCTION Assignment tEND_PARENTHESIS Body
-   23    | tFOR tBEGIN_PARENTHESIS Assignment . Expr tEND_OF_INSTRUCTION Assignment_sugar tEND_PARENTHESIS Body
+   24 For: tFOR tBEGIN_PARENTHESIS Assignment . tEND_OF_INSTRUCTION Expr tEND_OF_INSTRUCTION Assignment tEND_PARENTHESIS Body
+   25    | tFOR tBEGIN_PARENTHESIS Assignment . Expr tEND_OF_INSTRUCTION Assignment_sugar tEND_PARENTHESIS Body
 
     tNUMBER              décalage et aller à l'état 40
     tID                  décalage et aller à l'état 41
@@ -630,14 +638,14 @@ Expr (49)
 
 État 47
 
-   28 Expr: tMINUS tNUMBER .
+   31 Expr: tMINUS tNUMBER .
 
-    $défaut  réduction par utilisation de la règle 28 (Expr)
+    $défaut  réduction par utilisation de la règle 31 (Expr)
 
 
 État 48
 
-   30 Expr: Expr tPLUS . Expr
+   33 Expr: Expr tPLUS . Expr
 
     tNUMBER  décalage et aller à l'état 40
     tID      décalage et aller à l'état 41
@@ -648,7 +656,7 @@ Expr (49)
 
 État 49
 
-   31 Expr: Expr tMINUS . Expr
+   34 Expr: Expr tMINUS . Expr
 
     tNUMBER  décalage et aller à l'état 40
     tID      décalage et aller à l'état 41
@@ -659,7 +667,7 @@ Expr (49)
 
 État 50
 
-   32 Expr: Expr tMULTIPLY . Expr
+   35 Expr: Expr tMULTIPLY . Expr
 
     tNUMBER  décalage et aller à l'état 40
     tID      décalage et aller à l'état 41
@@ -670,7 +678,7 @@ Expr (49)
 
 État 51
 
-   33 Expr: Expr tDIVIDE . Expr
+   36 Expr: Expr tDIVIDE . Expr
 
     tNUMBER  décalage et aller à l'état 40
     tID      décalage et aller à l'état 41
@@ -681,7 +689,7 @@ Expr (49)
 
 État 52
 
-   34 Expr: Expr tGT . Expr
+   37 Expr: Expr tGT . Expr
 
     tNUMBER  décalage et aller à l'état 40
     tID      décalage et aller à l'état 41
@@ -692,7 +700,7 @@ Expr (49)
 
 État 53
 
-   35 Expr: Expr tGTE . Expr
+   38 Expr: Expr tGTE . Expr
 
     tNUMBER  décalage et aller à l'état 40
     tID      décalage et aller à l'état 41
@@ -703,7 +711,7 @@ Expr (49)
 
 État 54
 
-   36 Expr: Expr tLT . Expr
+   39 Expr: Expr tLT . Expr
 
     tNUMBER  décalage et aller à l'état 40
     tID      décalage et aller à l'état 41
@@ -714,7 +722,7 @@ Expr (49)
 
 État 55
 
-   37 Expr: Expr tLTE . Expr
+   40 Expr: Expr tLTE . Expr
 
     tNUMBER  décalage et aller à l'état 40
     tID      décalage et aller à l'état 41
@@ -725,7 +733,7 @@ Expr (49)
 
 État 56
 
-   38 Expr: Expr tEQUALITY . Expr
+   41 Expr: Expr tEQUALITY . Expr
 
     tNUMBER  décalage et aller à l'état 40
     tID      décalage et aller à l'état 41
@@ -736,17 +744,17 @@ Expr (49)
 
 État 57
 
-   24 If: tIF tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS . Body
-   25   | tIF tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS . Body tELSE Body
+   26 If: tIF tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS . If_act Body_if
+   27   | tIF tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS . If_act Body_if tELSE Body_if
 
-    tBEGIN_BLOCK  décalage et aller à l'état 7
+    $défaut  réduction par utilisation de la règle 28 (If_act)
 
-    Body  aller à l'état 70
+    If_act  aller à l'état 70
 
 
 État 58
 
-   26 While: tWHILE tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS . Body
+   29 While: tWHILE tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS . Body
 
     tBEGIN_BLOCK  décalage et aller à l'état 7
 
@@ -755,7 +763,7 @@ Expr (49)
 
 État 59
 
-   22 For: tFOR tBEGIN_PARENTHESIS Assignment tEND_OF_INSTRUCTION . Expr tEND_OF_INSTRUCTION Assignment tEND_PARENTHESIS Body
+   24 For: tFOR tBEGIN_PARENTHESIS Assignment tEND_OF_INSTRUCTION . Expr tEND_OF_INSTRUCTION Assignment tEND_PARENTHESIS Body
 
     tNUMBER  décalage et aller à l'état 40
     tID      décalage et aller à l'état 41
@@ -766,16 +774,16 @@ Expr (49)
 
 État 60
 
-   23 For: tFOR tBEGIN_PARENTHESIS Assignment Expr . tEND_OF_INSTRUCTION Assignment_sugar tEND_PARENTHESIS Body
-   30 Expr: Expr . tPLUS Expr
-   31     | Expr . tMINUS Expr
-   32     | Expr . tMULTIPLY Expr
-   33     | Expr . tDIVIDE Expr
-   34     | Expr . tGT Expr
-   35     | Expr . tGTE Expr
-   36     | Expr . tLT Expr
-   37     | Expr . tLTE Expr
-   38     | Expr . tEQUALITY Expr
+   25 For: tFOR tBEGIN_PARENTHESIS Assignment Expr . tEND_OF_INSTRUCTION Assignment_sugar tEND_PARENTHESIS Body
+   33 Expr: Expr . tPLUS Expr
+   34     | Expr . tMINUS Expr
+   35     | Expr . tMULTIPLY Expr
+   36     | Expr . tDIVIDE Expr
+   37     | Expr . tGT Expr
+   38     | Expr . tGTE Expr
+   39     | Expr . tLT Expr
+   40     | Expr . tLTE Expr
+   41     | Expr . tEQUALITY Expr
 
     tEND_OF_INSTRUCTION  décalage et aller à l'état 73
     tPLUS                décalage et aller à l'état 48
@@ -791,87 +799,19 @@ Expr (49)
 
 État 61
 
-   30 Expr: Expr . tPLUS Expr
-   30     | Expr tPLUS Expr .
-   31     | Expr . tMINUS Expr
-   32     | Expr . tMULTIPLY Expr
-   33     | Expr . tDIVIDE Expr
-   34     | Expr . tGT Expr
-   35     | Expr . tGTE Expr
-   36     | Expr . tLT Expr
-   37     | Expr . tLTE Expr
-   38     | Expr . tEQUALITY Expr
+   33 Expr: Expr . tPLUS Expr
+   33     | Expr tPLUS Expr .
+   34     | Expr . tMINUS Expr
+   35     | Expr . tMULTIPLY Expr
+   36     | Expr . tDIVIDE Expr
+   37     | Expr . tGT Expr
+   38     | Expr . tGTE Expr
+   39     | Expr . tLT Expr
+   40     | Expr . tLTE Expr
+   41     | Expr . tEQUALITY Expr
 
     tMULTIPLY  décalage et aller à l'état 50
     tDIVIDE    décalage et aller à l'état 51
-    tGT        décalage et aller à l'état 52
-    tGTE       décalage et aller à l'état 53
-    tLT        décalage et aller à l'état 54
-    tLTE       décalage et aller à l'état 55
-    tEQUALITY  décalage et aller à l'état 56
-
-    $défaut  réduction par utilisation de la règle 30 (Expr)
-
-
-État 62
-
-   30 Expr: Expr . tPLUS Expr
-   31     | Expr . tMINUS Expr
-   31     | Expr tMINUS Expr .
-   32     | Expr . tMULTIPLY Expr
-   33     | Expr . tDIVIDE Expr
-   34     | Expr . tGT Expr
-   35     | Expr . tGTE Expr
-   36     | Expr . tLT Expr
-   37     | Expr . tLTE Expr
-   38     | Expr . tEQUALITY Expr
-
-    tMULTIPLY  décalage et aller à l'état 50
-    tDIVIDE    décalage et aller à l'état 51
-    tGT        décalage et aller à l'état 52
-    tGTE       décalage et aller à l'état 53
-    tLT        décalage et aller à l'état 54
-    tLTE       décalage et aller à l'état 55
-    tEQUALITY  décalage et aller à l'état 56
-
-    $défaut  réduction par utilisation de la règle 31 (Expr)
-
-
-État 63
-
-   30 Expr: Expr . tPLUS Expr
-   31     | Expr . tMINUS Expr
-   32     | Expr . tMULTIPLY Expr
-   32     | Expr tMULTIPLY Expr .
-   33     | Expr . tDIVIDE Expr
-   34     | Expr . tGT Expr
-   35     | Expr . tGTE Expr
-   36     | Expr . tLT Expr
-   37     | Expr . tLTE Expr
-   38     | Expr . tEQUALITY Expr
-
-    tGT        décalage et aller à l'état 52
-    tGTE       décalage et aller à l'état 53
-    tLT        décalage et aller à l'état 54
-    tLTE       décalage et aller à l'état 55
-    tEQUALITY  décalage et aller à l'état 56
-
-    $défaut  réduction par utilisation de la règle 32 (Expr)
-
-
-État 64
-
-   30 Expr: Expr . tPLUS Expr
-   31     | Expr . tMINUS Expr
-   32     | Expr . tMULTIPLY Expr
-   33     | Expr . tDIVIDE Expr
-   33     | Expr tDIVIDE Expr .
-   34     | Expr . tGT Expr
-   35     | Expr . tGTE Expr
-   36     | Expr . tLT Expr
-   37     | Expr . tLTE Expr
-   38     | Expr . tEQUALITY Expr
-
     tGT        décalage et aller à l'état 52
     tGTE       décalage et aller à l'état 53
     tLT        décalage et aller à l'état 54
@@ -881,117 +821,197 @@ Expr (49)
     $défaut  réduction par utilisation de la règle 33 (Expr)
 
 
-État 65
+État 62
 
-   30 Expr: Expr . tPLUS Expr
-   31     | Expr . tMINUS Expr
-   32     | Expr . tMULTIPLY Expr
-   33     | Expr . tDIVIDE Expr
-   34     | Expr . tGT Expr
-   34     | Expr tGT Expr .
-   35     | Expr . tGTE Expr
-   36     | Expr . tLT Expr
-   37     | Expr . tLTE Expr
-   38     | Expr . tEQUALITY Expr
+   33 Expr: Expr . tPLUS Expr
+   34     | Expr . tMINUS Expr
+   34     | Expr tMINUS Expr .
+   35     | Expr . tMULTIPLY Expr
+   36     | Expr . tDIVIDE Expr
+   37     | Expr . tGT Expr
+   38     | Expr . tGTE Expr
+   39     | Expr . tLT Expr
+   40     | Expr . tLTE Expr
+   41     | Expr . tEQUALITY Expr
+
+    tMULTIPLY  décalage et aller à l'état 50
+    tDIVIDE    décalage et aller à l'état 51
+    tGT        décalage et aller à l'état 52
+    tGTE       décalage et aller à l'état 53
+    tLT        décalage et aller à l'état 54
+    tLTE       décalage et aller à l'état 55
+    tEQUALITY  décalage et aller à l'état 56
 
     $défaut  réduction par utilisation de la règle 34 (Expr)
 
 
-État 66
+État 63
 
-   30 Expr: Expr . tPLUS Expr
-   31     | Expr . tMINUS Expr
-   32     | Expr . tMULTIPLY Expr
-   33     | Expr . tDIVIDE Expr
-   34     | Expr . tGT Expr
-   35     | Expr . tGTE Expr
-   35     | Expr tGTE Expr .
-   36     | Expr . tLT Expr
-   37     | Expr . tLTE Expr
-   38     | Expr . tEQUALITY Expr
+   33 Expr: Expr . tPLUS Expr
+   34     | Expr . tMINUS Expr
+   35     | Expr . tMULTIPLY Expr
+   35     | Expr tMULTIPLY Expr .
+   36     | Expr . tDIVIDE Expr
+   37     | Expr . tGT Expr
+   38     | Expr . tGTE Expr
+   39     | Expr . tLT Expr
+   40     | Expr . tLTE Expr
+   41     | Expr . tEQUALITY Expr
+
+    tGT        décalage et aller à l'état 52
+    tGTE       décalage et aller à l'état 53
+    tLT        décalage et aller à l'état 54
+    tLTE       décalage et aller à l'état 55
+    tEQUALITY  décalage et aller à l'état 56
 
     $défaut  réduction par utilisation de la règle 35 (Expr)
 
 
-État 67
+État 64
 
-   30 Expr: Expr . tPLUS Expr
-   31     | Expr . tMINUS Expr
-   32     | Expr . tMULTIPLY Expr
-   33     | Expr . tDIVIDE Expr
-   34     | Expr . tGT Expr
-   35     | Expr . tGTE Expr
-   36     | Expr . tLT Expr
-   36     | Expr tLT Expr .
-   37     | Expr . tLTE Expr
-   38     | Expr . tEQUALITY Expr
+   33 Expr: Expr . tPLUS Expr
+   34     | Expr . tMINUS Expr
+   35     | Expr . tMULTIPLY Expr
+   36     | Expr . tDIVIDE Expr
+   36     | Expr tDIVIDE Expr .
+   37     | Expr . tGT Expr
+   38     | Expr . tGTE Expr
+   39     | Expr . tLT Expr
+   40     | Expr . tLTE Expr
+   41     | Expr . tEQUALITY Expr
+
+    tGT        décalage et aller à l'état 52
+    tGTE       décalage et aller à l'état 53
+    tLT        décalage et aller à l'état 54
+    tLTE       décalage et aller à l'état 55
+    tEQUALITY  décalage et aller à l'état 56
 
     $défaut  réduction par utilisation de la règle 36 (Expr)
 
 
-État 68
+État 65
 
-   30 Expr: Expr . tPLUS Expr
-   31     | Expr . tMINUS Expr
-   32     | Expr . tMULTIPLY Expr
-   33     | Expr . tDIVIDE Expr
-   34     | Expr . tGT Expr
-   35     | Expr . tGTE Expr
-   36     | Expr . tLT Expr
-   37     | Expr . tLTE Expr
-   37     | Expr tLTE Expr .
-   38     | Expr . tEQUALITY Expr
+   33 Expr: Expr . tPLUS Expr
+   34     | Expr . tMINUS Expr
+   35     | Expr . tMULTIPLY Expr
+   36     | Expr . tDIVIDE Expr
+   37     | Expr . tGT Expr
+   37     | Expr tGT Expr .
+   38     | Expr . tGTE Expr
+   39     | Expr . tLT Expr
+   40     | Expr . tLTE Expr
+   41     | Expr . tEQUALITY Expr
 
     $défaut  réduction par utilisation de la règle 37 (Expr)
 
 
-État 69
+État 66
 
-   30 Expr: Expr . tPLUS Expr
-   31     | Expr . tMINUS Expr
-   32     | Expr . tMULTIPLY Expr
-   33     | Expr . tDIVIDE Expr
-   34     | Expr . tGT Expr
-   35     | Expr . tGTE Expr
-   36     | Expr . tLT Expr
-   37     | Expr . tLTE Expr
-   38     | Expr . tEQUALITY Expr
-   38     | Expr tEQUALITY Expr .
+   33 Expr: Expr . tPLUS Expr
+   34     | Expr . tMINUS Expr
+   35     | Expr . tMULTIPLY Expr
+   36     | Expr . tDIVIDE Expr
+   37     | Expr . tGT Expr
+   38     | Expr . tGTE Expr
+   38     | Expr tGTE Expr .
+   39     | Expr . tLT Expr
+   40     | Expr . tLTE Expr
+   41     | Expr . tEQUALITY Expr
 
     $défaut  réduction par utilisation de la règle 38 (Expr)
 
 
+État 67
+
+   33 Expr: Expr . tPLUS Expr
+   34     | Expr . tMINUS Expr
+   35     | Expr . tMULTIPLY Expr
+   36     | Expr . tDIVIDE Expr
+   37     | Expr . tGT Expr
+   38     | Expr . tGTE Expr
+   39     | Expr . tLT Expr
+   39     | Expr tLT Expr .
+   40     | Expr . tLTE Expr
+   41     | Expr . tEQUALITY Expr
+
+    $défaut  réduction par utilisation de la règle 39 (Expr)
+
+
+État 68
+
+   33 Expr: Expr . tPLUS Expr
+   34     | Expr . tMINUS Expr
+   35     | Expr . tMULTIPLY Expr
+   36     | Expr . tDIVIDE Expr
+   37     | Expr . tGT Expr
+   38     | Expr . tGTE Expr
+   39     | Expr . tLT Expr
+   40     | Expr . tLTE Expr
+   40     | Expr tLTE Expr .
+   41     | Expr . tEQUALITY Expr
+
+    $défaut  réduction par utilisation de la règle 40 (Expr)
+
+
+État 69
+
+   33 Expr: Expr . tPLUS Expr
+   34     | Expr . tMINUS Expr
+   35     | Expr . tMULTIPLY Expr
+   36     | Expr . tDIVIDE Expr
+   37     | Expr . tGT Expr
+   38     | Expr . tGTE Expr
+   39     | Expr . tLT Expr
+   40     | Expr . tLTE Expr
+   41     | Expr . tEQUALITY Expr
+   41     | Expr tEQUALITY Expr .
+
+    $défaut  réduction par utilisation de la règle 41 (Expr)
+
+
 État 70
 
-   24 If: tIF tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS Body .
-   25   | tIF tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS Body . tELSE Body
+   26 If: tIF tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS If_act . Body_if
+   27   | tIF tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS If_act . Body_if tELSE Body_if
 
-    tELSE  décalage et aller à l'état 74
+    tINTEGER             décalage et aller à l'état 9
+    tCONSTANT            décalage et aller à l'état 10
+    tCHAR                décalage et aller à l'état 11
+    tSTRING              décalage et aller à l'état 12
+    tID                  décalage et aller à l'état 13
+    tBEGIN_BLOCK         décalage et aller à l'état 7
+    tEND_OF_INSTRUCTION  décalage et aller à l'état 17
 
-    $défaut  réduction par utilisation de la règle 24 (If)
+    Body        aller à l'état 74
+    Body_if     aller à l'état 75
+    Instr       aller à l'état 76
+    Prefix      aller à l'état 21
+    Type        aller à l'état 22
+    Definition  aller à l'état 23
+    Assignment  aller à l'état 24
 
 
 État 71
 
-   26 While: tWHILE tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS Body .
+   29 While: tWHILE tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS Body .
 
-    $défaut  réduction par utilisation de la règle 26 (While)
+    $défaut  réduction par utilisation de la règle 29 (While)
 
 
 État 72
 
-   22 For: tFOR tBEGIN_PARENTHESIS Assignment tEND_OF_INSTRUCTION Expr . tEND_OF_INSTRUCTION Assignment tEND_PARENTHESIS Body
-   30 Expr: Expr . tPLUS Expr
-   31     | Expr . tMINUS Expr
-   32     | Expr . tMULTIPLY Expr
-   33     | Expr . tDIVIDE Expr
-   34     | Expr . tGT Expr
-   35     | Expr . tGTE Expr
-   36     | Expr . tLT Expr
-   37     | Expr . tLTE Expr
-   38     | Expr . tEQUALITY Expr
+   24 For: tFOR tBEGIN_PARENTHESIS Assignment tEND_OF_INSTRUCTION Expr . tEND_OF_INSTRUCTION Assignment tEND_PARENTHESIS Body
+   33 Expr: Expr . tPLUS Expr
+   34     | Expr . tMINUS Expr
+   35     | Expr . tMULTIPLY Expr
+   36     | Expr . tDIVIDE Expr
+   37     | Expr . tGT Expr
+   38     | Expr . tGTE Expr
+   39     | Expr . tLT Expr
+   40     | Expr . tLTE Expr
+   41     | Expr . tEQUALITY Expr
 
-    tEND_OF_INSTRUCTION  décalage et aller à l'état 75
+    tEND_OF_INSTRUCTION  décalage et aller à l'état 77
     tPLUS                décalage et aller à l'état 48
     tMINUS               décalage et aller à l'état 49
     tMULTIPLY            décalage et aller à l'état 50
@@ -1005,116 +1025,152 @@ Expr (49)
 
 État 73
 
-   23 For: tFOR tBEGIN_PARENTHESIS Assignment Expr tEND_OF_INSTRUCTION . Assignment_sugar tEND_PARENTHESIS Body
+   25 For: tFOR tBEGIN_PARENTHESIS Assignment Expr tEND_OF_INSTRUCTION . Assignment_sugar tEND_PARENTHESIS Body
 
-    tID  décalage et aller à l'état 76
+    tID  décalage et aller à l'état 78
 
-    Assignment_sugar  aller à l'état 77
+    Assignment_sugar  aller à l'état 79
 
 
 État 74
 
-   25 If: tIF tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS Body tELSE . Body
+    4 Body_if: Body .
 
-    tBEGIN_BLOCK  décalage et aller à l'état 7
-
-    Body  aller à l'état 78
+    $défaut  réduction par utilisation de la règle 4 (Body_if)
 
 
 État 75
 
-   22 For: tFOR tBEGIN_PARENTHESIS Assignment tEND_OF_INSTRUCTION Expr tEND_OF_INSTRUCTION . Assignment tEND_PARENTHESIS Body
+   26 If: tIF tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS If_act Body_if .
+   27   | tIF tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS If_act Body_if . tELSE Body_if
 
-    tID  décalage et aller à l'état 13
+    tELSE  décalage et aller à l'état 80
 
-    Assignment  aller à l'état 79
+    $défaut  réduction par utilisation de la règle 26 (If)
 
 
 État 76
 
-   20 Assignment_sugar: tID . tPLUS tPLUS
-   21                 | tID . tMINUS tMINUS
+    3 Body_if: Instr .
 
-    tPLUS   décalage et aller à l'état 80
-    tMINUS  décalage et aller à l'état 81
+    $défaut  réduction par utilisation de la règle 3 (Body_if)
 
 
 État 77
 
-   23 For: tFOR tBEGIN_PARENTHESIS Assignment Expr tEND_OF_INSTRUCTION Assignment_sugar . tEND_PARENTHESIS Body
+   24 For: tFOR tBEGIN_PARENTHESIS Assignment tEND_OF_INSTRUCTION Expr tEND_OF_INSTRUCTION . Assignment tEND_PARENTHESIS Body
 
-    tEND_PARENTHESIS  décalage et aller à l'état 82
+    tID  décalage et aller à l'état 13
+
+    Assignment  aller à l'état 81
 
 
 État 78
 
-   25 If: tIF tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS Body tELSE Body .
+   22 Assignment_sugar: tID . tPLUS tPLUS
+   23                 | tID . tMINUS tMINUS
 
-    $défaut  réduction par utilisation de la règle 25 (If)
+    tPLUS   décalage et aller à l'état 82
+    tMINUS  décalage et aller à l'état 83
 
 
 État 79
 
-   22 For: tFOR tBEGIN_PARENTHESIS Assignment tEND_OF_INSTRUCTION Expr tEND_OF_INSTRUCTION Assignment . tEND_PARENTHESIS Body
+   25 For: tFOR tBEGIN_PARENTHESIS Assignment Expr tEND_OF_INSTRUCTION Assignment_sugar . tEND_PARENTHESIS Body
 
-    tEND_PARENTHESIS  décalage et aller à l'état 83
+    tEND_PARENTHESIS  décalage et aller à l'état 84
 
 
 État 80
 
-   20 Assignment_sugar: tID tPLUS . tPLUS
+   27 If: tIF tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS If_act Body_if tELSE . Body_if
 
-    tPLUS  décalage et aller à l'état 84
+    tINTEGER             décalage et aller à l'état 9
+    tCONSTANT            décalage et aller à l'état 10
+    tCHAR                décalage et aller à l'état 11
+    tSTRING              décalage et aller à l'état 12
+    tID                  décalage et aller à l'état 13
+    tBEGIN_BLOCK         décalage et aller à l'état 7
+    tEND_OF_INSTRUCTION  décalage et aller à l'état 17
+
+    Body        aller à l'état 74
+    Body_if     aller à l'état 85
+    Instr       aller à l'état 76
+    Prefix      aller à l'état 21
+    Type        aller à l'état 22
+    Definition  aller à l'état 23
+    Assignment  aller à l'état 24
 
 
 État 81
 
-   21 Assignment_sugar: tID tMINUS . tMINUS
+   24 For: tFOR tBEGIN_PARENTHESIS Assignment tEND_OF_INSTRUCTION Expr tEND_OF_INSTRUCTION Assignment . tEND_PARENTHESIS Body
 
-    tMINUS  décalage et aller à l'état 85
+    tEND_PARENTHESIS  décalage et aller à l'état 86
 
 
 État 82
 
-   23 For: tFOR tBEGIN_PARENTHESIS Assignment Expr tEND_OF_INSTRUCTION Assignment_sugar tEND_PARENTHESIS . Body
+   22 Assignment_sugar: tID tPLUS . tPLUS
 
-    tBEGIN_BLOCK  décalage et aller à l'état 7
-
-    Body  aller à l'état 86
+    tPLUS  décalage et aller à l'état 87
 
 
 État 83
 
-   22 For: tFOR tBEGIN_PARENTHESIS Assignment tEND_OF_INSTRUCTION Expr tEND_OF_INSTRUCTION Assignment tEND_PARENTHESIS . Body
+   23 Assignment_sugar: tID tMINUS . tMINUS
 
-    tBEGIN_BLOCK  décalage et aller à l'état 7
-
-    Body  aller à l'état 87
+    tMINUS  décalage et aller à l'état 88
 
 
 État 84
 
-   20 Assignment_sugar: tID tPLUS tPLUS .
+   25 For: tFOR tBEGIN_PARENTHESIS Assignment Expr tEND_OF_INSTRUCTION Assignment_sugar tEND_PARENTHESIS . Body
 
-    $défaut  réduction par utilisation de la règle 20 (Assignment_sugar)
+    tBEGIN_BLOCK  décalage et aller à l'état 7
+
+    Body  aller à l'état 89
 
 
 État 85
 
-   21 Assignment_sugar: tID tMINUS tMINUS .
+   27 If: tIF tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS If_act Body_if tELSE Body_if .
 
-    $défaut  réduction par utilisation de la règle 21 (Assignment_sugar)
+    $défaut  réduction par utilisation de la règle 27 (If)
 
 
 État 86
 
-   23 For: tFOR tBEGIN_PARENTHESIS Assignment Expr tEND_OF_INSTRUCTION Assignment_sugar tEND_PARENTHESIS Body .
+   24 For: tFOR tBEGIN_PARENTHESIS Assignment tEND_OF_INSTRUCTION Expr tEND_OF_INSTRUCTION Assignment tEND_PARENTHESIS . Body
 
-    $défaut  réduction par utilisation de la règle 23 (For)
+    tBEGIN_BLOCK  décalage et aller à l'état 7
+
+    Body  aller à l'état 90
 
 
 État 87
 
-   22 For: tFOR tBEGIN_PARENTHESIS Assignment tEND_OF_INSTRUCTION Expr tEND_OF_INSTRUCTION Assignment tEND_PARENTHESIS Body .
+   22 Assignment_sugar: tID tPLUS tPLUS .
 
-    $défaut  réduction par utilisation de la règle 22 (For)
+    $défaut  réduction par utilisation de la règle 22 (Assignment_sugar)
+
+
+État 88
+
+   23 Assignment_sugar: tID tMINUS tMINUS .
+
+    $défaut  réduction par utilisation de la règle 23 (Assignment_sugar)
+
+
+État 89
+
+   25 For: tFOR tBEGIN_PARENTHESIS Assignment Expr tEND_OF_INSTRUCTION Assignment_sugar tEND_PARENTHESIS Body .
+
+    $défaut  réduction par utilisation de la règle 25 (For)
+
+
+État 90
+
+   24 For: tFOR tBEGIN_PARENTHESIS Assignment tEND_OF_INSTRUCTION Expr tEND_OF_INSTRUCTION Assignment tEND_PARENTHESIS Body .
+
+    $défaut  réduction par utilisation de la règle 24 (For)

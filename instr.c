@@ -16,15 +16,16 @@ void instr_print()
 			instrs[i].c);
 }
 
-void instr_add(char *op, char *a, char *b, char *c)
+void instr_add(char *op, char *a, char *b, char *c, int *counter)
 {
 	Instruction i = {strdup(op), strdup(a), strdup(b), strdup(c)};
 	//printf("ARTHOOOUUUUUUUR!!! (%d) '%s  '%s  '%s  '%s\n", instr_position, i.op, i.a, i.b, i.c);
 	instrs[instr_position] = i;
 	instr_position++;
-	//printf("===========================\n");
-	//instr_print();
-	//printf("===========================\n");
+	(*counter)++;
+	printf("===========================\n");
+	instr_print();
+	printf("===========================\n");
 }
 
 Instruction instr_get(int offset) // Stack-like

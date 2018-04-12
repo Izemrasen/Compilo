@@ -12,8 +12,8 @@ void yyerror(char*);
 char depth = 0;
 Type type;
 char buffer[32];
+int instr_count = 0;
 
-// TODO: $1 returns bullshit
 %}
 
 %union{
@@ -47,6 +47,10 @@ start:
 Body:
 	tBEGIN_BLOCK Instrs tEND_BLOCK ;
 
+Body_if: 
+	Instr
+	| Body ; 
+
 Instrs:
 	Instr Instrs
 	| Block Instrs
@@ -55,7 +59,7 @@ Instrs:
 Instr:
 	Definition tEND_OF_INSTRUCTION
 	| Assignment tEND_OF_INSTRUCTION
-	| tEND_OF_INSTRUCTION ;
+	| tEND_OF_INSTRUCTION;
 
 Block:
 	If
@@ -91,13 +95,14 @@ Assignment:
 		}
 		sprintf(buffer, "%d", $3);
 		printf("<<<<<id: %s  %s  \n", $1, buffer);
-		instr_add("AFC", "RO", buffer, "");
+		instr_add("AFC", "RO", buffer, "", &instr_count);
 		sprintf(buffer, "%d", position);
-		instr_add("STORE", buffer, "R0", "");
+		instr_add("STORE", buffer, "R0", "", &instr_count);
 		st_init($1);
 		st_print();
 	} ;
 
+// TODO: test
 Assignment_sugar:
 	tID tPLUS tPLUS
 	| tID tMINUS tMINUS;
@@ -111,8 +116,25 @@ For:
 	| tFOR tBEGIN_PARENTHESIS Assignment Expr tEND_OF_INSTRUCTION Assignment_sugar tEND_PARENTHESIS Body;
 
 If:
-	tIF tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS Body { printf("If\n"); } //%prec tTRUC 
-	| tIF tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS Body tELSE Body /* Body_if */ { printf("If Else\n"); };
+	tIF tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS If_act Body_if %prec tTRUC 
+	{
+		// Patch jump instr
+		int pos = instr_count + 1;
+		Instruction jump = instr_get(pos);
+		sprintf(buffer, "%d", pos);
+		jump.a = buffer;
+		instr_set(pos, jump);
+		instr_print();
+	}
+	| tIF tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS If_act Body_if tELSE Body_if;
+
+If_act:
+	{
+		sprintf(buffer, "%d", st_get_pos() - 1);
+		instr_add("LOAD", "R0", buffer, "", &instr_count);
+		instr_add("JMPC", "-1", "R0", "", &instr_count);
+		instr_count = 0;
+	}
 
 While:
 	tWHILE tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS Body { printf("While\n"); };
@@ -121,43 +143,43 @@ Expr:
 	tNUMBER
 	{
 		sprintf(buffer, "%d", $1);
-		instr_add("AFC", "R0", buffer, "");
+		instr_add("AFC", "R0", buffer, "", &instr_count);
 		st_add("", INTEGER, depth);
 		$$ = st_get_pos() - 1;
 		sprintf(buffer, "%d", $$);
 		printf("$$: %d\n", $$);
-		instr_add("STORE", buffer, "R0", "");
+		instr_add("STORE", buffer, "R0", "", &instr_count);
 		st_print();
 	}
 	| tMINUS tNUMBER
 	{
 		sprintf(buffer, "%d", $2);
-		instr_add("AFC", "R0", buffer, "");
+		instr_add("AFC", "R0", buffer, "", &instr_count);
 		st_add("", INTEGER, depth);
 		$$ = st_get_pos() - 1;
-		instr_add("AFC", "R1", "0", "");
-		instr_add("SOU", "R0", "R1", "R0");
+		instr_add("AFC", "R1", "0", "", &instr_count);
+		instr_add("SOU", "R0", "R1", "R0", &instr_count);
 		sprintf(buffer, "%d", $$);
-		instr_add("STORE", buffer, "R0", "");
+		instr_add("STORE", buffer, "R0", "", &instr_count);
 	}
 	| tID
 	{
 		sprintf(buffer, "%d", st_get($1));
-		instr_add("LOAD", "R0", buffer, "");
+		instr_add("LOAD", "R0", buffer, "", &instr_count);
 		st_add("", INTEGER, depth);
 		$$ = st_get_pos() - 1;
 		sprintf(buffer, "%d", $$);
-		instr_add("STORE", buffer, "R0", "");
+		instr_add("STORE", buffer, "R0", "", &instr_count);
 	}
 	| Expr tPLUS Expr
 	{
 		sprintf(buffer, "%d", $1);
-		instr_add("LOAD", "R0", buffer, "");
+		instr_add("LOAD", "R0", buffer, "", &instr_count);
 		sprintf(buffer, "%d", $3);
-		instr_add("LOAD", "R1", buffer, "");
-		instr_add("ADD", "R0", "R0", "R1");
+		instr_add("LOAD", "R1", buffer, "", &instr_count);
+		instr_add("ADD", "R0", "R0", "R1", &instr_count);
 		sprintf(buffer, "%d", $1);
-		instr_add("STORE", buffer, "R0", "");
+		instr_add("STORE", buffer, "R0", "", &instr_count);
 		// liberer une variable tmp (decrementer l'indice dans table des symboles)
 		st_set_pos(st_get_pos() - 1);
 		$$ = $1;
@@ -165,36 +187,36 @@ Expr:
 	| Expr tMINUS Expr
 	{
 		sprintf(buffer, "%d", $1);
-		instr_add("LOAD", "R0", buffer, "");
+		instr_add("LOAD", "R0", buffer, "", &instr_count);
 		sprintf(buffer, "%d", $3);
-		instr_add("LOAD", "R1", buffer, "");
-		instr_add("SOU", "R0", "R0", "R1");
+		instr_add("LOAD", "R1", buffer, "", &instr_count);
+		instr_add("SOU", "R0", "R0", "R1", &instr_count);
 		sprintf(buffer, "%d", $1);
-		instr_add("STORE", buffer, "R0", "");
+		instr_add("STORE", buffer, "R0", "", &instr_count);
 		st_set_pos(st_get_pos() - 1);
 		$$ = $1;
 	}
 	| Expr tMULTIPLY Expr
 	{
 		sprintf(buffer, "%d", $1);
-		instr_add("LOAD", "R0", buffer, "");
+		instr_add("LOAD", "R0", buffer, "", &instr_count);
 		sprintf(buffer, "%d", $3);
-		instr_add("LOAD", "R1", buffer, "");
-		instr_add("MUL", "R0", "R0", "R1");
+		instr_add("LOAD", "R1", buffer, "", &instr_count);
+		instr_add("MUL", "R0", "R0", "R1", &instr_count);
 		sprintf(buffer, "%d", $1);
-		instr_add("STORE", buffer, "R0", "");
+		instr_add("STORE", buffer, "R0", "", &instr_count);
 		st_set_pos(st_get_pos() - 1);
 		$$ = $1;
 	}
 	| Expr tDIVIDE Expr
 	{
 		sprintf(buffer, "%d", $1);
-		instr_add("LOAD", "R0", buffer, "");
+		instr_add("LOAD", "R0", buffer, "", &instr_count);
 		sprintf(buffer, "%d", $3);
-		instr_add("LOAD", "R1", buffer, "");
-		instr_add("DIV", "R0", "R0", "R1");
+		instr_add("LOAD", "R1", buffer, "", &instr_count);
+		instr_add("DIV", "R0", "R0", "R1", &instr_count);
 		sprintf(buffer, "%d", $1);
-		instr_add("STORE", buffer, "R0", "");
+		instr_add("STORE", buffer, "R0", "", &instr_count);
 		st_set_pos(st_get_pos() - 1);
 		$$ = $1;
 	}
