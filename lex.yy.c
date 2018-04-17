@@ -362,13 +362,13 @@ struct yy_trans_info
 	};
 static const flex_int16_t yy_accept[73] =
     {   0,
-        0,    0,   33,   32,   31,   21,   28,   29,   13,   11,
-       12,   14,   23,   27,   18,   15,   16,   22,   24,   22,
-       22,   22,   22,   22,   22,   22,   22,   22,   25,   26,
-       23,   24,   19,   20,   17,   22,   22,   22,   22,   22,
-        3,   22,   22,   22,   22,   22,   22,   22,   22,   22,
-        6,    9,   22,   22,   22,   22,   22,   10,   22,    4,
-        1,   22,   22,    8,   22,    7,   22,   22,    5,   22,
+        0,    0,   33,   32,   31,   21,   29,   30,   13,   11,
+       12,   14,   24,   28,   18,   15,   16,   23,   25,   23,
+       23,   23,   23,   23,   23,   23,   23,   23,   26,   27,
+       24,   25,   19,   20,   17,   23,   23,   23,   23,   23,
+        3,   23,   23,   23,   23,   23,   23,   23,   23,   23,
+        6,    9,   23,   23,   23,   23,   23,   10,   23,    4,
+        1,   23,   23,    8,   23,    7,   23,   23,    5,   22,
         2,    0
     } ;
 
@@ -872,47 +872,47 @@ YY_RULE_SETUP
 case 22:
 YY_RULE_SETUP
 #line 37 "compiler.l"
-{ yylval.str = strdup(yytext); return tID; }
+{ return tPRINTF; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
 #line 38 "compiler.l"
-{ yylval.nb = atoi(yytext); return tNUMBER; }
+{ yylval.str = strdup(yytext); return tID; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
 #line 39 "compiler.l"
-{ return tSTRING; }
+{ yylval.nb = atoi(yytext); return tNUMBER; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
 #line 40 "compiler.l"
-{ return tBEGIN_BLOCK; }
+{ return tSTRING; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
 #line 41 "compiler.l"
-{ return tEND_BLOCK; }
+{ return tBEGIN_BLOCK; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
 #line 42 "compiler.l"
-{return tEND_OF_INSTRUCTION; }
+{ return tEND_BLOCK; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
 #line 43 "compiler.l"
-{ return tBEGIN_PARENTHESIS; }
+{return tEND_OF_INSTRUCTION; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
 #line 44 "compiler.l"
-{ return tEND_PARENTHESIS; }
+{ return tBEGIN_PARENTHESIS; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
 #line 45 "compiler.l"
-{ return tPRINTF; }
+{ return tEND_PARENTHESIS; }
 	YY_BREAK
 case 31:
 /* rule 31 can match eol */

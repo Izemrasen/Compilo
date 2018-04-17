@@ -1,5 +1,12 @@
 int main(){
-	if (1) {
-		int i = 5;
+	int i = 0;
+	if (i < 2) {
+		int i = 5 + 2;
+	} 
+	else {
+		int j = 3;
+	}
+	while (1) {
+		i = j + 5;
 	}
 }

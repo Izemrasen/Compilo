@@ -34,6 +34,7 @@ CHARACTER [a-zA-Z_0-9]
 "<=" { return tLTE;}
 "==" { return tEQUALITY;}
 "\"" { return tQUOTE;}
+"printf" { return tPRINTF; }
 [a-zA-Z]{CHARACTER}* { yylval.str = strdup(yytext); return tID; }
 {NUMBER}+ { yylval.nb = atoi(yytext); return tNUMBER; }
 {CHARACTER}+ { return tSTRING; }
@@ -42,7 +43,6 @@ CHARACTER [a-zA-Z_0-9]
 {END_OF_INSTRUCTION} {return tEND_OF_INSTRUCTION; }
 {BEGIN_PARENTHESIS} { return tBEGIN_PARENTHESIS; }
 {END_PARENTHESIS} { return tEND_PARENTHESIS; }
-"printf" { return tPRINTF; }
 [\t \n] ;
 
 %%

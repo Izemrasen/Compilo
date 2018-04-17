@@ -76,7 +76,8 @@ extern int yydebug;
     tLT = 286,
     tLTE = 287,
     tEQUALITY = 288,
-    tTRUC = 289
+    tNEG = 289,
+    tTRUC = 290
   };
 #endif
 
@@ -85,12 +86,12 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 19 "rule.y" /* yacc.c:1909  */
+#line 21 "rule.y" /* yacc.c:1909  */
 
 	char *str;
 	int nb;
 
-#line 94 "rule.tab.h" /* yacc.c:1909  */
+#line 95 "rule.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

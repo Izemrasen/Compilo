@@ -13,6 +13,8 @@ char depth = 0;
 Type type;
 char buffer[32];
 int instr_count = 0;
+int instr_count2 = 0;
+
 
 %}
 
@@ -31,9 +33,12 @@ int instr_count = 0;
 %type <str> tID tINTEGER tCONSTANT tCHAR tSTRING 
 %type <nb> tNUMBER Expr
 
+
 %left tPLUS tMINUS
 %left tMULTIPLY tDIVIDE
+%left tNEG
 %left tGT tGTE tLT tLTE tEQUALITY
+
 
 %nonassoc tTRUC
 %nonassoc tELSE
@@ -102,10 +107,11 @@ Assignment:
 		st_print();
 	} ;
 
-// TODO: test
+// TODO: test 
 Assignment_sugar:
 	tID tPLUS tPLUS
 	| tID tMINUS tMINUS;
+
 
 // TODO : Printf Assembleur Ternaires Comments
 //Printf:
@@ -113,7 +119,7 @@ Assignment_sugar:
 
 For:
 	tFOR tBEGIN_PARENTHESIS Assignment tEND_OF_INSTRUCTION Expr tEND_OF_INSTRUCTION Assignment tEND_PARENTHESIS Body;
-	| tFOR tBEGIN_PARENTHESIS Assignment Expr tEND_OF_INSTRUCTION Assignment_sugar tEND_PARENTHESIS Body;
+	| tFOR tBEGIN_PARENTHESIS Assignment tEND_OF_INSTRUCTION Expr tEND_OF_INSTRUCTION Assignment_sugar tEND_PARENTHESIS Body;
 
 If:
 	tIF tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS If_act Body_if %prec tTRUC 
@@ -126,7 +132,16 @@ If:
 		instr_set(pos, jump);
 		instr_print();
 	}
-	| tIF tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS If_act Body_if tELSE Body_if;
+	| tIF tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS If_act Body_if If_else_act tELSE else_act Body_if
+	{
+		int pos = instr_count + 1;
+		Instruction jump = instr_get(pos);
+		sprintf(buffer, "%d", pos);
+		jump.a = strdup(buffer);
+		instr_set(pos, jump);
+		instr_print();
+	}
+	;
 
 If_act:
 	{
@@ -136,8 +151,47 @@ If_act:
 		instr_count = 0;
 	}
 
+If_else_act:
+	{
+		// Patch jump instr
+		int pos = instr_count + 1;
+		Instruction jumpc = instr_get(pos);
+		sprintf(buffer, "%d", pos);
+		jumpc.a = strdup(buffer);
+		instr_set(pos, jumpc);
+		instr_print();
+	}
+else_act:
+	{	
+		sprintf(buffer, "%d", st_get_pos() - 1);
+		instr_add("JMP", "-1", "R0", "", &instr_count);
+		instr_count = 0;
+	}
+
 While:
-	tWHILE tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS Body { printf("While\n"); };
+	tWHILE tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS While_act Body 
+	{
+		
+		int pos = instr_count + 1;
+		sprintf(buffer, "%d", -pos);
+		instr_add("JMP", buffer, "R0", "", &instr_count);
+		pos = instr_count + 1;
+		Instruction jumpc = instr_get(pos);
+		sprintf(buffer, "%d", pos-1);
+		jumpc.a = strdup(buffer);
+		instr_set(pos, jumpc);
+		instr_print();
+		
+	}
+	;
+
+While_act:
+	{
+		sprintf(buffer, "%d", st_get_pos() - 1);
+		instr_add("LOAD", "R0", buffer, "", &instr_count);
+		instr_add("JMPC", "-1", "R0", "", &instr_count);
+		instr_count = 0;
+	}
 
 Expr:
 	tNUMBER
@@ -151,7 +205,7 @@ Expr:
 		instr_add("STORE", buffer, "R0", "", &instr_count);
 		st_print();
 	}
-	| tMINUS tNUMBER
+	| tMINUS tNUMBER %prec tNEG
 	{
 		sprintf(buffer, "%d", $2);
 		instr_add("AFC", "R0", buffer, "", &instr_count);
