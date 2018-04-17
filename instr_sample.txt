@@ -1,0 +1,3 @@
+AFC	R0	2	
+AFC	R1	1	
+INF	R2	R0	R1
