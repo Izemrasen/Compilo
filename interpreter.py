@@ -10,16 +10,28 @@ reg = dict(zip(						# Registers
  [0 for x in range(16)]))
 mem = [0 for i in range(1024)]		# Data memory
 
-def get_reg(str_reg):
-	return reg[str_reg]
-
-def set_reg(str_reg, val):
-	reg[str_reg] = val
+def handle_err(msg):
+	msg = "Error (l. {}): {}".format(ip + 1, msg)
+	print(msg)
+	sys.exit(1)
 
 def debug(instrs):
 	print(reg)
 	#print(mem)
 	print(instrs[ip])
+
+def get_reg(str_reg):
+	if str_reg in reg:
+		return reg[str_reg]
+	else:
+		handle_err("Register doesn't exist")
+		return None
+
+def set_reg(str_reg, val):
+	if str_reg in reg:
+		reg[str_reg] = val
+	else:
+		handle_err("Register doesn't exist")
 
 def process(instrs):
 	global ip
@@ -33,7 +45,7 @@ def process(instrs):
 		b = s[2]
 		c = s[3]
 	except IndexError:
-		#print("Warning on l. %d: Possibly missing arguments" % ip)
+		#print("Warning (l. %d): Possibly missing arguments" % ip)
 		pass
 	
 	# Process instructions
@@ -98,7 +110,7 @@ def process(instrs):
 			char_ptr += 1
 			byte = mem[char_ptr]
 	else:
-		print("Unknown instruction (l. %d)" % (ip + 1))
+		handle_err("Unknown instruction")
 	ip += 1
 
 def main():
