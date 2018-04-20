@@ -1,0 +1,9 @@
+Compilo
+	instr_add(): rajouter argument "label" ou "comment" (permet d'étiqueter les instructions assembleur pour mieux débugger)
+	Fonctions
+	Pointeurs
+	Optimisations
+		Distribution registres pour éviter d'utiliser tout le temps les mêmes
+		...
+Interpréteur
+	Veni, vidi, vici
