@@ -4,6 +4,8 @@ import os
 import sys
 import argparse
 
+debug = True
+
 ip = 0								# Instruction pointer
 reg = dict(zip(						# Registers
  ['R' + str(x) for x in range(16)],
@@ -15,10 +17,10 @@ def handle_err(msg):
 	print(msg)
 	sys.exit(1)
 
-def debug(instrs):
-	print(reg)
+def debug(i):
+	#print(reg)
 	#print(mem)
-	print(instrs[ip])
+	print("{}:\t{}".format(ip, i))
 
 def get_reg(str_reg):
 	if str_reg in reg:
@@ -39,26 +41,27 @@ def process(instrs):
 	
 	# Handle mssing arguments
 	try:
-		s = i.split('\t', maxsplit=4)
-		op = s[0]
-		a = s[1]
-		b = s[2]
-		c = s[3]
+		i = i.split('\t')
+		op = i[0]
+		a = i[1]
+		b = i[2]
+		c = i[3]
 	except IndexError:
 		#print("Warning (l. %d): Possibly missing arguments" % ip)
 		pass
 	
 	# Process instructions
-	#debug(instrs)
+	if debug:
+		debug(instrs[ip])
 	if op[:1] == '#':	# Comments
 		pass
-	elif op == 'JMP':	# WARNING: THIS IS AN ABSOLUTE ADDRESS!!! => TODO: APPPLY IT TO COMPILER
+	elif op == 'JMP':
 		a = int(a)
-		ip = a - 1
+		ip += a
 	elif op == 'JMPC':
 		if get_reg(b) == 0:
 			a = int(a)
-			ip = a - 1
+			ip += a
 		else:
 			pass
 	elif op == 'AFC':
