@@ -19,7 +19,7 @@ def set_reg(str_reg, val):
 def debug(instrs):
 	print(reg)
 	#print(mem)
-	#print(instrs[ip])
+	print(instrs[ip])
 
 def process(instrs):
 	global ip
@@ -37,14 +37,18 @@ def process(instrs):
 		pass
 	
 	# Process instructions
+	#debug(instrs)
 	if op[:1] == '#':	# Comments
 		pass
-	elif op == 'JMP':
+	elif op == 'JMP':	# WARNING: THIS IS AN ABSOLUTE ADDRESS!!! => TODO: APPPLY IT TO COMPILER
 		a = int(a)
-		ip += a
-	elif op == 'JMPC' and get_reg(b) == 0:
-		a = int(a)
-		ip += a
+		ip = a - 1
+	elif op == 'JMPC':
+		if get_reg(b) == 0:
+			a = int(a)
+			ip = a - 1
+		else:
+			pass
 	elif op == 'AFC':
 		b = int(b)
 		set_reg(a, b)
@@ -69,6 +73,22 @@ def process(instrs):
 	elif op == 'SUPE':
 		val = 1 if get_reg(b) >= get_reg(c) else 0
 		set_reg(a, val)
+	elif op == 'ADD':
+		val1 = get_reg(b)
+		val2 = get_reg(c)
+		set_reg(a, int(val1 + val2))
+	elif op == 'MUL':
+		val1 = get_reg(b)
+		val2 = get_reg(c)
+		set_reg(a, int(val1 * val2))
+	elif op == 'SOU':
+		val1 = get_reg(b)
+		val2 = get_reg(c)
+		set_reg(a, int(val1 - val2))
+	elif op == 'DIV':
+		val1 = get_reg(b)
+		val2 = get_reg(c)
+		set_reg(a, int(val1 / val2))
 	elif op == 'PRINT':	# Easter egg
 		char_ptr = int(a)
 		byte = mem[char_ptr]
@@ -77,7 +97,8 @@ def process(instrs):
 			print(chr(byte), end='', flush=True)
 			char_ptr += 1
 			byte = mem[char_ptr]
-	#debug(instrs)
+	else:
+		print("Unknown instruction (l. %d)" % (ip + 1))
 	ip += 1
 
 def main():
@@ -95,7 +116,7 @@ def main():
 	while ip < instr_count:
 		process(instrs)
 	
-	debug(instrs)
+	#debug(instrs)
 	
 	f.close()
 	sys.exit(0)
