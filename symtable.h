@@ -19,3 +19,4 @@ void st_init(char *id);
 char st_is_init(char *id);
 int st_get_pos();
 void st_set_pos(int position_new);
+void st_rm(char *id);

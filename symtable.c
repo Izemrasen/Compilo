@@ -8,7 +8,7 @@ Symbol table[TABLE_SIZE];
 int position = 0;
 
 // TODO: upd initialized
-// TODO: rm_symbol() (+ free(id))
+// TODO: overwrite removed symbols
 
 void st_print_s(Symbol symbol)
 {
@@ -26,6 +26,7 @@ void st_print()
 	}
 }
 
+// TODO: make sure symbol not already in table?
 void st_add(char *id, Type type, char depth)
 {
 	Symbol *s = malloc(sizeof(*s));
@@ -39,14 +40,17 @@ void st_add(char *id, Type type, char depth)
 	position++;
 }
 
+// Return symbol index
 int st_get(char *id)
 {
-	int i;
-	for (i = 0; i < position; i++) {
-		if (strcmp(id, table[i].id) == 0) {
-			//Symbol *symbol = malloc(sizeof(Symbol));
-			//*symbol = table[i];
-			return i;
+	if (strcmp(id, "") != 0) {
+		int i;
+		for (i = 0; i < position; i++) {
+			if (strcmp(id, table[i].id) == 0) {
+				//Symbol *symbol = malloc(sizeof(Symbol));
+				//*symbol = table[i];
+				return i;
+			}
 		}
 	}
 	return SYMBOL_NOT_FOUND;
@@ -54,22 +58,14 @@ int st_get(char *id)
 
 void st_init(char *id)
 {
-	int i;
-	for (i = 0; i < position; i++) {
-		if (strcmp(id, table[i].id) == 0) {
-			table[i].initialized = 1;
-			return;
-		}
-	}
+	int i = st_get(id);
+	table[i].initialized = 1;
 }
 
 char st_is_init(char *id)
 {
-	int i;
-	for (i = 0; i < position; i++) {
-		if (strcmp(id, table[i].id) == 0)
-			return table[i].initialized;
-	}
+	int i = st_get(id);
+	return table[i].initialized;
 }
 
 int st_get_pos()
@@ -82,11 +78,27 @@ void st_set_pos(int position_new)
 	position = position_new;
 }
 
+void st_rm(char *id)
+{
+	int i = st_get(id);
+	//free(table[i]);
+	if (i == position - 1)
+		position--;
+	else
+		table[i].id = "";
+}
+
 /*
 int main()
 {
-	print_table();
-	add_symbol("michou", INTEGER, 0);
-	print_table();
-	Symbol *pe2 = get_symbol("michou");
-}*/
+	st_print();
+	st_add("michou", INTEGER, 0);
+	st_add("michou2", INTEGER, 1);
+	st_print();
+	int index = st_get("michou");
+	printf("michou=%d\n", table[index].depth);
+	st_rm("michou");
+	st_print();
+	printf("%d\n", st_get("michou"));
+}
+*/
