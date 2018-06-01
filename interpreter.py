@@ -20,12 +20,16 @@ def handle_err(msg):
 	sys.exit(1)
 
 
-def debug(i):
-	#print(reg)
-	print("\n{}:\t{}\t\t".format(ip, i), end='')
+def print_instr(i):
+	print("{}:\t{}\t\t".format(ip, i), end='')
+
+
+
+def print_mem():
+	print(reg['R0'], reg['R1'], reg['R2'], '\t\t', end='')
 	for i in range(0, 10):
 		print(str(mem[i]) + " ", end='')
-
+	print()
 
 def get_reg(str_reg):
 	if str_reg in reg:
@@ -57,8 +61,12 @@ def process(instrs):
 		#print("Warning (l. %d): Possibly missing arguments" % ip)
 		pass
 	
+	# Debug
+	if debug:
+		print_instr(instrs[ip])
+	
 	# Process instructions
-	if op[:1] == '#':	# Comments
+	if op[:1] == '#' or op[:1] == '\n' or op == '':	# Ignore
 		pass
 	elif op == 'JMP':
 		a = int(a)
@@ -125,8 +133,9 @@ def process(instrs):
 			byte = mem[char_ptr]
 	else:
 		handle_err("Unknown instruction")
+	# Print mem blob
 	if debug:
-		debug(instrs[ip])
+		print_mem()
 	ip += 1
 
 
@@ -148,6 +157,7 @@ def main():
 	#debug(instrs)
 	
 	f.close()
+	print()
 	sys.exit(0)
 
 if __name__ == '__main__':

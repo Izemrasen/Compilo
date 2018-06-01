@@ -1,23 +1,20 @@
-Compilo
+Compiler
+	Pointers
+		=> align interpreter w/ compiler
 	BUGS
 		#1. a simple affectation creates a new entry in symtable!!!
-		#2. useless AFC && store at the end of program
-	Depth handling
+		#2. If/else: when multiple "if" in "else", "if" jump is not patched
 	Make use of "initialized" flag (error etc.)
-	Pointeurs
-	BUG: 
 	Support for strings???
 	Implement print(void *x)!!!
 	Support comments
 	
 	EXTRA MVP
-		Fonctions
 		Optimisations
 			Instead of passing arithmetic results via memory, pass it via registers
-			Distribution registres pour éviter d'utiliser tout le temps les mêmes
-			Clean symbol table: rm anonym symbols, etc.
+			Distribute registers to avoid using the same repeatedly
+			Clear symbol table: rm anonym symbols, etc. (cf TODO)
 			...
-		instr_add(): rajouter argument "label" ou "comment" (permet d'étiqueter les instructions assembleur pour mieux débugger)
-
-Interpréteur
-	Upd w/ compilo
+		Functions
+		Instead of "sprintf; ...", create handy function
+		instr_add(): labelise instructions for debugging purposes

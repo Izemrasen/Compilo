@@ -109,7 +109,6 @@ Assignment:
 		sprintf(buffer, "%d", position);
 		instr_add("STORE", buffer, "R0", "", &instr_count);
 		st_init($1);
-		st_print();
 	} ;
 
 // TODO: test 
@@ -135,7 +134,6 @@ If:
 		sprintf(buffer, "%d", pos);
 		jump.a = buffer;
 		instr_set(pos, jump);
-		instr_print();
 	}
 	| tIF tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS If_act Body_if If_else_act tELSE else_act Body_if
 	{
@@ -144,7 +142,6 @@ If:
 		sprintf(buffer, "%d", pos);
 		jump.a = strdup(buffer);
 		instr_set(pos, jump);
-		instr_print();
 	}
 	;
 
@@ -164,7 +161,6 @@ If_else_act:
 		sprintf(buffer, "%d", pos);
 		jumpc.a = strdup(buffer);
 		instr_set(pos, jumpc);
-		instr_print();
 	}
 else_act:
 	{	
@@ -178,15 +174,13 @@ While:
 	{
 		
 		int pos = instr_count + 1;
-		sprintf(buffer, "%d", -pos);
+		sprintf(buffer, "%d", -pos - 10); // TODO: WARNING: this is a silly workaround
 		instr_add("JMP", buffer, "R0", "", &instr_count);
 		pos = instr_count + 1;
 		Instruction jumpc = instr_get(pos);
-		sprintf(buffer, "%d", pos-1);
+		sprintf(buffer, "%d", pos - 1);
 		jumpc.a = strdup(buffer);
 		instr_set(pos, jumpc);
-		instr_print();
-		
 	}
 	;
 
@@ -201,7 +195,6 @@ While_act:
 Expr:
 	tNUMBER
 	{
-		printf("<<<<<Expr 1\n");
 		sprintf(buffer, "%d", $1);
 		instr_add("AFC", "R0", buffer, "", &instr_count);
 		st_add("", INTEGER, depth);
@@ -209,11 +202,9 @@ Expr:
 		sprintf(buffer, "%d", $$);
 		printf("$$: %d\n", $$);
 		instr_add("STORE", buffer, "R0", "", &instr_count);
-		st_print();
 	}
 	| tMINUS tNUMBER %prec tNEG
 	{
-		printf("<<<<<Expr 2\n");
 		sprintf(buffer, "%d", $2);
 		instr_add("AFC", "R0", buffer, "", &instr_count);
 		st_add("", INTEGER, depth);
@@ -225,7 +216,6 @@ Expr:
 	}
 	| tID
 	{
-		printf("<<<<<Expr 3\n");
 		sprintf(buffer, "%d", st_get($1));
 		instr_add("LOAD", "R0", buffer, "", &instr_count);
 		st_add("", INTEGER, depth);
@@ -235,14 +225,6 @@ Expr:
 	}
 	| Expr tPLUS Expr
 	{
-		// Debug
-		printf("<<<<<Expr 4\n");
-		st_print();
-		sprintf(buffer, "%d", $1);
-		printf("expr: %d + ", buffer);
-		sprintf(buffer, "%d", $3);
-		printf("%d\n", buffer);
-		
 		sprintf(buffer, "%d", $1);
 		instr_add("LOAD", "R0", buffer, "", &instr_count);
 		sprintf(buffer, "%d", $3);
@@ -251,7 +233,7 @@ Expr:
 		sprintf(buffer, "%d", $1);
 		instr_add("STORE", buffer, "R0", "", &instr_count);
 		// liberer une variable tmp (decrementer l'indice dans table des symboles)
-		st_set_pos(st_get_pos() - 1);
+		//st_set_pos(st_get_pos() - 1);
 		$$ = $1;
 	}
 	| Expr tMINUS Expr
@@ -263,7 +245,7 @@ Expr:
 		instr_add("SOU", "R0", "R0", "R1", &instr_count);
 		sprintf(buffer, "%d", $1);
 		instr_add("STORE", buffer, "R0", "", &instr_count);
-		st_set_pos(st_get_pos() - 1);
+		//st_set_pos(st_get_pos() - 1);
 		$$ = $1;
 	}
 	| Expr tMULTIPLY Expr
@@ -275,7 +257,7 @@ Expr:
 		instr_add("MUL", "R0", "R0", "R1", &instr_count);
 		sprintf(buffer, "%d", $1);
 		instr_add("STORE", buffer, "R0", "", &instr_count);
-		st_set_pos(st_get_pos() - 1);
+		//st_set_pos(st_get_pos() - 1);
 		$$ = $1;
 	}
 	| Expr tDIVIDE Expr
@@ -287,14 +269,69 @@ Expr:
 		instr_add("DIV", "R0", "R0", "R1", &instr_count);
 		sprintf(buffer, "%d", $1);
 		instr_add("STORE", buffer, "R0", "", &instr_count);
-		st_set_pos(st_get_pos() - 1);
+		//st_set_pos(st_get_pos() - 1);
 		$$ = $1;
 	}
-	| Expr tGT Expr { printf("Condition 1\n"); }
-	| Expr tGTE Expr { printf("Condition 2\n"); }
-	| Expr tLT Expr { printf("Condition 3\n"); }
-	| Expr tLTE Expr { printf("Condition 4\n"); }
-	| Expr tEQUALITY Expr { printf("Egalité\n"); }
+	| Expr tGT Expr
+	{
+		printf("Condition GT\n");
+		sprintf(buffer, "%d", $1);
+		instr_add("LOAD", "R1", buffer, "", &instr_count);
+		sprintf(buffer, "%d", $3);
+		instr_add("LOAD", "R2", buffer, "", &instr_count);
+		instr_add("SUP", "R0", "R1", "R2", &instr_count);
+		instr_add("STORE", buffer, "R0", "", &instr_count);
+		//st_set_pos(st_get_pos() - 1);
+		$$ = $3;
+	}
+	| Expr tGTE Expr
+	{
+		printf("Condition GTE\n");
+		sprintf(buffer, "%d", $1);
+		instr_add("LOAD", "R1", buffer, "", &instr_count);
+		sprintf(buffer, "%d", $3);
+		instr_add("LOAD", "R2", buffer, "", &instr_count);
+		instr_add("SUPE", "R0", "R1", "R2", &instr_count);
+		instr_add("STORE", buffer, "R0", "", &instr_count);
+		//st_set_pos(st_get_pos() - 1);
+		$$ = $3;
+	}
+	| Expr tLT Expr
+	{
+		printf("Condition LT\n");
+		sprintf(buffer, "%d", $1);
+		instr_add("LOAD", "R1", buffer, "", &instr_count);
+		sprintf(buffer, "%d", $3);
+		instr_add("LOAD", "R2", buffer, "", &instr_count);
+		instr_add("INF", "R0", "R1", "R2", &instr_count);
+		instr_add("STORE", buffer, "R0", "", &instr_count);
+		//st_set_pos(st_get_pos() - 1);
+		$$ = $3;
+	}
+	| Expr tLTE Expr
+	{
+		printf("Condition LTE\n");
+		sprintf(buffer, "%d", $1);
+		instr_add("LOAD", "R1", buffer, "", &instr_count);
+		sprintf(buffer, "%d", $3);
+		instr_add("LOAD", "R2", buffer, "", &instr_count);
+		instr_add("INFE", "R0", "R1", "R2", &instr_count);
+		instr_add("STORE", buffer, "R0", "", &instr_count);
+		//st_set_pos(st_get_pos() - 1);
+		$$ = $3;
+	}
+	| Expr tEQUALITY Expr
+	{
+		printf("Condition EQU\n");
+		sprintf(buffer, "%d", $1);
+		instr_add("LOAD", "R1", buffer, "", &instr_count);
+		sprintf(buffer, "%d", $3);
+		instr_add("LOAD", "R2", buffer, "", &instr_count);
+		instr_add("EQU", "R0", "R1", "R2", &instr_count);
+		instr_add("STORE", buffer, "R0", "", &instr_count);
+		//st_set_pos(st_get_pos() - 1);
+		$$ = $3;
+	}
 
 %%
 
@@ -309,5 +346,6 @@ int main(){
 	
 	printf("\n");
 	instr_print();
+	instr_to_file("./instr_sample.txt");
 }
 

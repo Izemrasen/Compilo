@@ -26,6 +26,8 @@ void st_print()
 	}
 }
 
+// TODO: recycle unused cells (look for anonym symbols)
+// => return index of new symbol
 void st_add(char *id, Type type, char depth)
 {
 	printf("Adding symbol '%s' @%d...\n", id, position);

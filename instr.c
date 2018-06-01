@@ -11,10 +11,29 @@ void instr_print()
 {
 	int i;
 	printf("Instrs (%d): \n", instr_position);
-	for (i = 0; i < instr_position; i++)
-		printf("%s\t%s\t%s\t%s\n", instrs[i].op, instrs[i].a, instrs[i].b,
+	for (i = 0; i < instr_position; i++) {
+		printf("%s\t%s\t%s\t%s", instrs[i].op, instrs[i].a, instrs[i].b,
 			instrs[i].c);
+		if (i < instr_position - 1)
+			printf("\n");
+	}
 }
+
+void instr_to_file(char *filename)
+{
+	FILE *f = fopen(filename, "w");
+	if (f == NULL)
+		return;
+	
+	int i;
+	for (i = 0; i < instr_position; i++) {
+		fprintf(f, "%s\t%s\t%s\t%s", instrs[i].op, instrs[i].a, instrs[i].b,
+			instrs[i].c);
+		if (i < instr_position - 1)
+			fprintf(f, "\n");
+	}
+}
+
 
 void instr_add(char *op, char *a, char *b, char *c, int *counter)
 {
@@ -23,9 +42,6 @@ void instr_add(char *op, char *a, char *b, char *c, int *counter)
 	instrs[instr_position] = i;
 	instr_position++;
 	(*counter)++;
-	printf("===========================\n");
-	instr_print();
-	printf("===========================\n");
 }
 
 Instruction instr_get(int offset) // Stack-like
