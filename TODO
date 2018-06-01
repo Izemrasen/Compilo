@@ -1,14 +1,23 @@
 Compilo
-	Profondeur -> scope
-		Supprimer var de la table de symbole
+	BUGS
+		#1. a simple affectation creates a new entry in symtable!!!
+		#2. useless AFC && store at the end of program
+	Depth handling
+	Make use of "initialized" flag (error etc.)
 	Pointeurs
+	BUG: 
+	Support for strings???
+	Implement print(void *x)!!!
+	Support comments
 	
-		EXTRA MVP
+	EXTRA MVP
+		Fonctions
 		Optimisations
+			Instead of passing arithmetic results via memory, pass it via registers
 			Distribution registres pour éviter d'utiliser tout le temps les mêmes
+			Clean symbol table: rm anonym symbols, etc.
 			...
 		instr_add(): rajouter argument "label" ou "comment" (permet d'étiqueter les instructions assembleur pour mieux débugger)
-		Fonctions
 
 Interpréteur
 	Upd w/ compilo

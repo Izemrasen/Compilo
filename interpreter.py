@@ -4,6 +4,7 @@ import os
 import sys
 import argparse
 
+
 debug = True
 
 ip = 0								# Instruction pointer
@@ -12,15 +13,19 @@ reg = dict(zip(						# Registers
  [0 for x in range(16)]))
 mem = [0 for i in range(1024)]		# Data memory
 
+
 def handle_err(msg):
 	msg = "Error (l. {}): {}".format(ip + 1, msg)
 	print(msg)
 	sys.exit(1)
 
+
 def debug(i):
 	#print(reg)
-	#print(mem)
-	print("{}:\t{}".format(ip, i))
+	print("\n{}:\t{}\t\t".format(ip, i), end='')
+	for i in range(0, 10):
+		print(str(mem[i]) + " ", end='')
+
 
 def get_reg(str_reg):
 	if str_reg in reg:
@@ -29,11 +34,13 @@ def get_reg(str_reg):
 		handle_err("Register doesn't exist")
 		return None
 
+
 def set_reg(str_reg, val):
 	if str_reg in reg:
 		reg[str_reg] = val
 	else:
 		handle_err("Register doesn't exist")
+
 
 def process(instrs):
 	global ip
@@ -51,8 +58,6 @@ def process(instrs):
 		pass
 	
 	# Process instructions
-	if debug:
-		debug(instrs[ip])
 	if op[:1] == '#':	# Comments
 		pass
 	elif op == 'JMP':
@@ -107,6 +112,12 @@ def process(instrs):
 	elif op == 'PRINT':	# Easter egg
 		char_ptr = int(a)
 		byte = mem[char_ptr]
+		
+		# Debug
+		print("<<< @=" + str(char_ptr) + " byte=" + str(byte))
+		for i in range(0, 3):
+			print(str(mem[i]) + " ", end='')
+		
 		while byte != 0:
 			byte = mem[char_ptr]
 			print(chr(byte), end='', flush=True)
@@ -114,7 +125,10 @@ def process(instrs):
 			byte = mem[char_ptr]
 	else:
 		handle_err("Unknown instruction")
+	if debug:
+		debug(instrs[ip])
 	ip += 1
+
 
 def main():
 	if len(sys.argv) < 2:

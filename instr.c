@@ -12,7 +12,7 @@ void instr_print()
 	int i;
 	printf("Instrs (%d): \n", instr_position);
 	for (i = 0; i < instr_position; i++)
-		printf("'%s\t'%s\t'%s\t'%s\n", instrs[i].op, instrs[i].a, instrs[i].b,
+		printf("%s\t%s\t%s\t%s\n", instrs[i].op, instrs[i].a, instrs[i].b,
 			instrs[i].c);
 }
 

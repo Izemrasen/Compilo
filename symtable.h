@@ -1,5 +1,6 @@
 #define TABLE_SIZE 1024
 #define SYMBOL_NOT_FOUND -1
+#define EMPTY_SYMBOL ""
 
 typedef enum Type {INTEGER, CHAR} Type;
 
@@ -20,3 +21,4 @@ char st_is_init(char *id);
 int st_get_pos();
 void st_set_pos(int position_new);
 void st_rm(char *id);
+void st_rm_block(int depth);

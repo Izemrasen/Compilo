@@ -50,7 +50,7 @@ start:
 	tINTEGER tMAIN tBEGIN_PARENTHESIS tEND_PARENTHESIS Body { printf("Main\n"); };
 
 Body:
-	tBEGIN_BLOCK Instrs tEND_BLOCK ;
+	{ depth++; } tBEGIN_BLOCK Instrs tEND_BLOCK { st_rm_block(depth--); } ;
 
 Body_if: 
 	Instr
@@ -87,7 +87,11 @@ Definition:
 		printf("Definition\n");
 		st_print();
 	}
-	| Prefix Assignment { printf("Definition2\n");};
+	| Prefix Assignment
+	{
+		printf("Definition2\n");
+		st_print();
+	};
 
 Assignment:
 	tID tASSIGN Expr
@@ -95,12 +99,13 @@ Assignment:
 		printf("Assignment\n");
 		int position = st_get($1);
 		if (position == SYMBOL_NOT_FOUND) {
+			printf("Symbol '%s' not found\n", $1);
 			st_add($1, type, depth);
 			position = st_get($1);
 		}
 		sprintf(buffer, "%d", $3);
-		printf("<<<<<id: %s  %s  \n", $1, buffer);
-		instr_add("AFC", "RO", buffer, "", &instr_count);
+		printf("<<<<<id: %s  @%s  \n", $1, buffer);
+		instr_add("LOAD", "R0", buffer, "", &instr_count);
 		sprintf(buffer, "%d", position);
 		instr_add("STORE", buffer, "R0", "", &instr_count);
 		st_init($1);
@@ -196,6 +201,7 @@ While_act:
 Expr:
 	tNUMBER
 	{
+		printf("<<<<<Expr 1\n");
 		sprintf(buffer, "%d", $1);
 		instr_add("AFC", "R0", buffer, "", &instr_count);
 		st_add("", INTEGER, depth);
@@ -207,6 +213,7 @@ Expr:
 	}
 	| tMINUS tNUMBER %prec tNEG
 	{
+		printf("<<<<<Expr 2\n");
 		sprintf(buffer, "%d", $2);
 		instr_add("AFC", "R0", buffer, "", &instr_count);
 		st_add("", INTEGER, depth);
@@ -218,6 +225,7 @@ Expr:
 	}
 	| tID
 	{
+		printf("<<<<<Expr 3\n");
 		sprintf(buffer, "%d", st_get($1));
 		instr_add("LOAD", "R0", buffer, "", &instr_count);
 		st_add("", INTEGER, depth);
@@ -227,6 +235,14 @@ Expr:
 	}
 	| Expr tPLUS Expr
 	{
+		// Debug
+		printf("<<<<<Expr 4\n");
+		st_print();
+		sprintf(buffer, "%d", $1);
+		printf("expr: %d + ", buffer);
+		sprintf(buffer, "%d", $3);
+		printf("%d\n", buffer);
+		
 		sprintf(buffer, "%d", $1);
 		instr_add("LOAD", "R0", buffer, "", &instr_count);
 		sprintf(buffer, "%d", $3);
@@ -290,7 +306,8 @@ int main(){
 	#endif
 
 	yyparse();
-
+	
+	printf("\n");
 	instr_print();
 }
 
