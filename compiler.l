@@ -26,7 +26,8 @@ CHARACTER [a-zA-Z_0-9]
 "+" { return tPLUS;}
 "-" { return tMINUS;}
 "*" { return tMULTIPLY;}
-"/" { return tDIVIDE;}
+"/" { return tDIVIDE;} 
+"&" { return tADDRESS;}
 "=" { return tASSIGN;}
 ">" { return tGT;}
 ">=" { return tGTE;}

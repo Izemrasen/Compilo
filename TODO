@@ -1,8 +1,6 @@
 Compiler
-	Pointers
-		=> align interpreter w/ compiler
 	BUGS
-		#1. a simple affectation creates a new entry in symtable!!!
+		#1. a simple affectation creates a new entry in symtable!!! Bug or not?
 		#2. If/else: when multiple "if" in "else", "if" jump is not patched
 	Make use of "initialized" flag (error etc.)
 	Support for strings???
@@ -11,10 +9,10 @@ Compiler
 	
 	EXTRA MVP
 		Optimisations
-			Instead of passing arithmetic results via memory, pass it via registers
+			Instead of passing results via memory, pass it via registers (=> return registers used)
 			Distribute registers to avoid using the same repeatedly
 			Clear symbol table: rm anonym symbols, etc. (cf TODO)
 			...
 		Functions
-		Instead of "sprintf; ...", create handy function
+		Instead of "sprintf; ...", create handy function for converting integers
 		instr_add(): labelise instructions for debugging purposes

@@ -27,7 +27,7 @@ int instr_count2 = 0;
 %token tIF tELSE tWHILE tFOR tMAIN tRETURN
 %token tCOMMA tBEGIN_PARENTHESIS tEND_PARENTHESIS tBEGIN_BLOCK tEND_BLOCK 
 %token tEND_OF_INSTRUCTION tPRINTF tQUOTE
-%token tPLUS tMINUS tMULTIPLY tDIVIDE tASSIGN tGT tGTE tLT tLTE tEQUALITY
+%token tPLUS tMINUS tMULTIPLY tDIVIDE tADDRESS tASSIGN tGT tGTE tLT tLTE tEQUALITY
 
 // TODO: rm tInteger etc.
 %type <str> tID tINTEGER tCONSTANT tCHAR tSTRING 
@@ -63,6 +63,7 @@ Instrs:
 
 Instr:
 	Definition tEND_OF_INSTRUCTION
+	| Dereference tEND_OF_INSTRUCTION
 	| Assignment tEND_OF_INSTRUCTION
 	| tEND_OF_INSTRUCTION;
 
@@ -93,6 +94,29 @@ Definition:
 		st_print();
 	};
 
+Dereference:
+	tMULTIPLY tID tASSIGN Expr
+	{
+		printf("Dereference\n");
+		int pointer_addr = st_get($2);
+		if (pointer_addr == SYMBOL_NOT_FOUND) {
+			sprintf(buffer, "Pointer '%s' not found\n", $2);
+			yyerror(buffer);
+		}
+
+		// Load target address
+		sprintf(buffer, "%d", pointer_addr);
+		instr_add("LOAD", "R0", buffer, "", &instr_count);
+		
+		// Load value to affect to target
+		sprintf(buffer, "%d", $4);
+		printf("<<<<<id: %s  @%s  \n", $2, buffer);
+		instr_add("LOAD", "R1", buffer, "", &instr_count);
+		
+		// Store value to target
+		instr_add("STOREI", "R0", "R1", "", &instr_count);
+	};
+
 Assignment:
 	tID tASSIGN Expr
 	{
@@ -109,7 +133,7 @@ Assignment:
 		sprintf(buffer, "%d", position);
 		instr_add("STORE", buffer, "R0", "", &instr_count);
 		st_init($1);
-	} ;
+	};
 
 // TODO: test 
 Assignment_sugar:
@@ -212,6 +236,16 @@ Expr:
 		instr_add("AFC", "R1", "0", "", &instr_count);
 		instr_add("SOU", "R0", "R1", "R0", &instr_count);
 		sprintf(buffer, "%d", $$);
+		instr_add("STORE", buffer, "R0", "", &instr_count);
+	}
+	| tADDRESS tID
+	{
+		sprintf(buffer, "%d", st_get($2));
+		instr_add("AFC", "R0", buffer, "", &instr_count);
+		st_add("", INTEGER, depth);
+		$$ = st_get_pos() - 1;
+		sprintf(buffer, "%d", $$);
+		printf("$$: %d\n", $$);
 		instr_add("STORE", buffer, "R0", "", &instr_count);
 	}
 	| tID
@@ -337,10 +371,12 @@ Expr:
 
 extern int yydebug;
 
-int main(){
+int main()
+{
 	#if YYDEBUG
 		yydebug = 1;
 	#endif
+	
 
 	yyparse();
 	
@@ -348,4 +384,3 @@ int main(){
 	instr_print();
 	instr_to_file("./instr_sample.txt");
 }
-

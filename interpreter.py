@@ -86,6 +86,8 @@ def process(instrs):
 	elif op == 'STORE':
 		a = int(a)
 		mem[a] = get_reg(b)
+	elif op == 'STOREI':
+		mem[get_reg(a)] = get_reg(b)
 	elif op == 'EQU':
 		val = 1 if get_reg(b) == get_reg(c) else 0
 		set_reg(a, val)
