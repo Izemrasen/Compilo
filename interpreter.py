@@ -64,6 +64,7 @@ def process(instrs):
 	# Debug
 	if debug:
 		print_instr(instrs[ip])
+		print_mem()
 	
 	# Process instructions
 	if op[:1] == '#' or op[:1] == '\n' or op == '':	# Ignore
@@ -83,6 +84,8 @@ def process(instrs):
 	elif op == 'LOAD':
 		b = int(b)
 		set_reg(a, mem[b])
+	elif op == 'LOADI':
+		set_reg(a, mem[get_reg(b)])
 	elif op == 'STORE':
 		a = int(a)
 		mem[a] = get_reg(b)
@@ -120,14 +123,14 @@ def process(instrs):
 		val2 = get_reg(c)
 		set_reg(a, int(val1 / val2))
 	elif op == 'PRINT':	# Easter egg
-		char_ptr = int(a)
+		char_ptr = get_reg(a)
 		byte = mem[char_ptr]
 		
 		# Debug
-		print("<<< @=" + str(char_ptr) + " byte=" + str(byte))
+		"""print("<<< @=" + str(char_ptr) + " byte=" + str(byte))
 		for i in range(0, 3):
 			print(str(mem[i]) + " ", end='')
-		
+		"""
 		while byte != 0:
 			byte = mem[char_ptr]
 			print(chr(byte), end='', flush=True)
@@ -135,9 +138,6 @@ def process(instrs):
 			byte = mem[char_ptr]
 	else:
 		handle_err("Unknown instruction")
-	# Print mem blob
-	if debug:
-		print_mem()
 	ip += 1
 
 

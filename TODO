@@ -1,13 +1,14 @@
 Compiler
-	Support for strings
-		When finding string, add every byte of it to memory, plus pointer
-	Implement print(void *x)!!!
-	BUGS
-		#1. a simple affectation creates a new entry in symtable!!! Bug or not?
-		#2. If/else: when multiple "if" in "else", "if" jump is not patched
+	Debug "while"
+	st_get: instead of using yyerror() each time, put error handling in symtable.c
+	Test "for"
 	Make use of "initialized" flag (error etc.)
 Architecture
-	Add instruction "STOREI"
+	Add instructions: LOADI, STOREI
+
+BUGS
+	#1. while: not working
+	#2. If/else: when multiple "if" in "else", "if" jump is not patched
 
 EXTRA MVP
 	Optimisations
@@ -17,4 +18,5 @@ EXTRA MVP
 		...
 	Functions
 	Instead of "sprintf; ...", create handy function for converting integers
+	ternary operators
 	instr_add(): labelise instructions for debugging purposes

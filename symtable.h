@@ -2,7 +2,7 @@
 #define SYMBOL_NOT_FOUND -1
 #define EMPTY_SYMBOL ""
 
-typedef enum Type {INTEGER, CHAR} Type;
+typedef enum Type {INTEGER, STRING} Type;
 
 // TODO: opti (bit fields)
 typedef struct Symbol
