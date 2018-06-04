@@ -14,6 +14,7 @@ char depth = 0;
 Type type;
 char prefix = 0;
 char string_defined = 0;
+char constant = 0;
 char buffer[64];
 int instr_count = 0;
 int instr_count2 = 0;
@@ -78,7 +79,7 @@ Block:
 
 Prefix: 
 	Type { printf("Type\n"); prefix = 1; }
-	| tCONSTANT Type { printf("Constante\n"); prefix = 1; } ;
+	| tCONSTANT Type { printf("Constante\n"); prefix = 1; constant = 1; } ;
 	
 Type: 
 	tINTEGER_TYPE { printf("Integer\n"); type = INTEGER; }
@@ -135,8 +136,13 @@ Assignment:
 			}
 		}
 		printf("<<<<<id: %s  @%s  \n", $1, buffer);
-		sprintf(buffer, "%d", $3);
 		
+		if (constant && st_is_init($1)) {
+			sprintf(buffer, "Constant '%s' is already initialized", $1);
+			yyerror(buffer);
+		}
+		
+		sprintf(buffer, "%d", $3);
 		if (string_defined) {
 			string_defined = 0;
 			instr_add("AFC", "R0", buffer, "", &instr_count);
@@ -226,7 +232,7 @@ else_act:
 While:
 	tWHILE tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS While_act Body 
 	{
-		
+		// Patch jump instr
 		int pos = instr_count + 1;
 		sprintf(buffer, "%d", -pos - 10); // TODO: WARNING: this is a silly workaround
 		instr_add("JMP", buffer, "R0", "", &instr_count);
@@ -240,7 +246,7 @@ While:
 
 While_act:
 	{
-		sprintf(buffer, "%d", st_get_pos() - 1);
+		sprintf(buffer, "%d", st_get_pos());
 		instr_add("LOAD", "R0", buffer, "", &instr_count);
 		instr_add("JMPC", "-1", "R0", "", &instr_count);
 		instr_count = 0;

@@ -1,14 +1,14 @@
 Compiler
-	Debug "while"
-	st_get: instead of using yyerror() each time, put error handling in symtable.c
+	Cleaning
+		Clean symtable.*
+		st_get: instead of using yyerror() each time, put error handling in symtable.c
 	Test "for"
 	Make use of "initialized" flag (error etc.)
 Architecture
 	Add instructions: LOADI, STOREI
 
 BUGS
-	#1. while: not working
-	#2. If/else: when multiple "if" in "else", "if" jump is not patched
+	#1. If/else: when multiple "if" in "else", "if" jump is not patched
 
 EXTRA MVP
 	Optimisations
