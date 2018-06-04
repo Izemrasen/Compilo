@@ -1,6 +1,7 @@
 %{
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "symtable.h"
 #include "instr.h"
 
@@ -11,6 +12,7 @@ void yyerror(char*);
 // TODO: handle depth
 char depth = 0;
 Type type;
+char prefix = 0;
 char buffer[32];
 int instr_count = 0;
 int instr_count2 = 0;
@@ -73,8 +75,8 @@ Block:
 	| For ;
 
 Prefix: 
-	Type { printf("Type\n");}
-	| tCONSTANT Type { printf("Constante\n"); } ;
+	Type { printf("Type\n"); prefix = 1; }
+	| tCONSTANT Type { printf("Constante\n"); prefix = 1; } ;
 	
 Type: 
 	tINTEGER { printf("Integer\n"); type = INTEGER;}
@@ -110,7 +112,6 @@ Dereference:
 		
 		// Load value to affect to target
 		sprintf(buffer, "%d", $4);
-		printf("<<<<<id: %s  @%s  \n", $2, buffer);
 		instr_add("LOAD", "R1", buffer, "", &instr_count);
 		
 		// Store value to target
@@ -123,9 +124,14 @@ Assignment:
 		printf("Assignment\n");
 		int position = st_get($1);
 		if (position == SYMBOL_NOT_FOUND) {
-			printf("Symbol '%s' not found\n", $1);
-			st_add($1, type, depth);
-			position = st_get($1);
+			if (prefix) {
+				st_add($1, type, depth);
+				position = st_get($1);
+				prefix = 0;
+			} else {
+				sprintf(buffer, "Symbol '%s' not found\n", $1);
+				yyerror(buffer);
+			}
 		}
 		sprintf(buffer, "%d", $3);
 		printf("<<<<<id: %s  @%s  \n", $1, buffer);
@@ -383,4 +389,10 @@ int main()
 	printf("\n");
 	instr_print();
 	instr_to_file("./instr_sample.txt");
+}
+
+void yyerror(char *msg)
+{
+	printf("Error: %s\n", msg);
+	exit(-1);
 }

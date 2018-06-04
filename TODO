@@ -1,18 +1,22 @@
 Compiler
+	Check symbol defined when finding assignment, if bad: error
+	Support for strings
+		When finding string, add every byte of it to memory, plus pointer
+	Implement print(void *x)!!!
 	BUGS
 		#1. a simple affectation creates a new entry in symtable!!! Bug or not?
 		#2. If/else: when multiple "if" in "else", "if" jump is not patched
 	Make use of "initialized" flag (error etc.)
-	Support for strings???
-	Implement print(void *x)!!!
 	Support comments
-	
-	EXTRA MVP
-		Optimisations
-			Instead of passing results via memory, pass it via registers (=> return registers used)
-			Distribute registers to avoid using the same repeatedly
-			Clear symbol table: rm anonym symbols, etc. (cf TODO)
-			...
-		Functions
-		Instead of "sprintf; ...", create handy function for converting integers
-		instr_add(): labelise instructions for debugging purposes
+Architecture
+	Add instruction "STOREI"
+
+EXTRA MVP
+	Optimisations
+		Instead of passing results via memory, pass it via registers (=> return registers used)
+		Distribute registers to avoid using the same repeatedly
+		Clear symbol table: rm anonym symbols, etc. (cf TODO)
+		...
+	Functions
+	Instead of "sprintf; ...", create handy function for converting integers
+	instr_add(): labelise instructions for debugging purposes
