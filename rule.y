@@ -110,7 +110,7 @@ Dereference:
 		sprintf(buffer, "%d", pointer_addr);
 		instr_add("LOAD", "R0", buffer, "", &instr_count);
 		
-		// Load value to affect to target
+		// Load value to assign to target
 		sprintf(buffer, "%d", $4);
 		instr_add("LOAD", "R1", buffer, "", &instr_count);
 		

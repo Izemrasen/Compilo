@@ -44,7 +44,9 @@ CHARACTER [a-zA-Z_0-9]
 {END_OF_INSTRUCTION} {return tEND_OF_INSTRUCTION; }
 {BEGIN_PARENTHESIS} { return tBEGIN_PARENTHESIS; }
 {END_PARENTHESIS} { return tEND_PARENTHESIS; }
+
 [\t \n] ;
+\/\/.* ;
+\/\*(.*\n)*.*\*\/ ;
 
 %%
-

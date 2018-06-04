@@ -1,5 +1,4 @@
 Compiler
-	Check symbol defined when finding assignment, if bad: error
 	Support for strings
 		When finding string, add every byte of it to memory, plus pointer
 	Implement print(void *x)!!!
@@ -7,7 +6,6 @@ Compiler
 		#1. a simple affectation creates a new entry in symtable!!! Bug or not?
 		#2. If/else: when multiple "if" in "else", "if" jump is not patched
 	Make use of "initialized" flag (error etc.)
-	Support comments
 Architecture
 	Add instruction "STOREI"
 
