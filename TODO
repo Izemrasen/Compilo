@@ -1,4 +1,9 @@
 Compiler
+	Pointers
+		Dereference can be used after "=" in assignment
+		Format: *(Expr)
+	Print
+		Support for raw strings and addresses (&xxx)
 	Cleaning
 		Clean symtable.*
 		st_get: instead of using yyerror() each time, put error handling in symtable.c
@@ -17,6 +22,6 @@ EXTRA MVP
 		Clear symbol table: rm anonym symbols, etc. (cf TODO)
 		...
 	Functions
-	Instead of "sprintf; ...", create handy function for converting integers
-	ternary operators
+	Strings: support for escaped chars ("\n", etc.)
+	Ternary operators
 	instr_add(): labelise instructions for debugging purposes

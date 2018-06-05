@@ -5,7 +5,7 @@ import sys
 import argparse
 
 
-debug = True
+debug = False
 
 ip = 0								# Instruction pointer
 reg = dict(zip(						# Registers
@@ -145,6 +145,9 @@ def main():
 	if len(sys.argv) < 2:
 		print("Missing arguments")
 		sys.exit(1)
+	if len(sys.argv) > 2 and sys.argv[2] == "-d":
+		global debug
+		debug = True
 	
 	# Open assembly source
 	filename = sys.argv[1]
@@ -159,7 +162,7 @@ def main():
 	#debug(instrs)
 	
 	f.close()
-	print()
+	#print()
 	sys.exit(0)
 
 if __name__ == '__main__':

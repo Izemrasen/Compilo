@@ -253,6 +253,12 @@ While_act:
 	}
 
 Expr:
+	tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS
+	{
+		printf("Expr w/ parentheses!!!\n");
+		$$ = $2;
+	}
+	|
 	tNUMBER
 	{
 		sprintf(buffer, "%d", $1);
