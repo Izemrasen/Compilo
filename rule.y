@@ -99,17 +99,11 @@ Definition:
 	};
 
 Dereference:
-	tMULTIPLY tID tASSIGN Expr
+	tMULTIPLY Expr tASSIGN Expr
 	{
-		printf("Dereference\n");
-		int pointer_addr = st_get($2);
-		if (pointer_addr == SYMBOL_NOT_FOUND) {
-			sprintf(buffer, "Pointer '%s' not found\n", $2);
-			yyerror(buffer);
-		}
-
+		printf("Dereference left!!!!\n");
 		// Load target address
-		sprintf(buffer, "%d", pointer_addr);
+		sprintf(buffer, "%d", $2);
 		instr_add("LOAD", "R0", buffer, "", &instr_count);
 		
 		// Load value to assign to target
@@ -442,6 +436,24 @@ Expr:
 		st_set_pos(st_get_pos() - 1);
 		$$ = $3;
 	}
+	| tMULTIPLY Expr
+	{
+		printf("Dereference right!!!!\n");
+		// Load result of expression
+		sprintf(buffer, "%d", $2);
+		instr_add("LOAD", "R0", buffer, "", &instr_count);
+		st_set_pos(st_get_pos() - 1);
+		
+		// Get targeted value
+		instr_add("LOADI", "R0", "R0", "", &instr_count);
+		
+		// XXX
+		// Save to stack
+		st_add("", INTEGER, depth);
+		$$ = st_get_pos() - 1;
+		sprintf(buffer, "%d", $$);
+		instr_add("STORE", buffer, "R0", "", &instr_count);
+	};
 
 %%
 

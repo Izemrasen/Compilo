@@ -1,16 +1,20 @@
 Compiler
-	Pointers
-		Dereference can be used after "=" in assignment
-		Format: *(Expr)
 	Print
 		Support for raw strings and addresses (&xxx)
+	Expressions
+		Add "&ID"
 	Cleaning
 		Clean symtable.*
 		st_get: instead of using yyerror() each time, put error handling in symtable.c
+	Find name for compiler
+		Ideas: Rick, Prick, Compote, CompiRiiiiick
 	Test "for"
 	Make use of "initialized" flag (error etc.)
+Interpreter
+	Feature for parsing ASM && saving it into a binary
+		=> argument => better way of handling arguments (arg parser)
 Architecture
-	Add instructions: LOADI, STOREI
+	Implement instructions: LOADI, STOREI
 
 BUGS
 	#1. If/else: when multiple "if" in "else", "if" jump is not patched
