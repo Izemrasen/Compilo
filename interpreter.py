@@ -49,6 +49,8 @@ def set_reg(str_reg, val):
 def process(instrs):
 	global ip
 	i = instrs[ip]
+	# Output buffer
+	output = ''
 	
 	# Handle mssing arguments
 	try:
@@ -64,7 +66,6 @@ def process(instrs):
 	# Debug
 	if debug:
 		print_instr(instrs[ip])
-		print_mem()
 	
 	# Process instructions
 	if op[:1] == '#' or op[:1] == '\n' or op == '':	# Ignore
@@ -122,22 +123,24 @@ def process(instrs):
 		val1 = get_reg(b)
 		val2 = get_reg(c)
 		set_reg(a, int(val1 / val2))
-	elif op == 'PRINT':	# Easter egg
+	elif op == 'PRINT':
 		char_ptr = get_reg(a)
 		byte = mem[char_ptr]
-		
-		# Debug
-		"""print("<<< @=" + str(char_ptr) + " byte=" + str(byte))
-		for i in range(0, 3):
-			print(str(mem[i]) + " ", end='')
-		"""
+		# Buffer output
 		while byte != 0:
 			byte = mem[char_ptr]
-			print(chr(byte), end='', flush=True)
+			output = '{}{}'.format(output, chr(byte))
 			char_ptr += 1
 			byte = mem[char_ptr]
 	else:
 		handle_err("Unknown instruction")
+	if debug:
+		print_mem()
+	
+	# Print output
+	if output:
+		print(output)
+	
 	ip += 1
 
 

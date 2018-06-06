@@ -136,19 +136,10 @@ Assignment:
 			yyerror(buffer);
 		}
 		
-		sprintf(buffer, "%d", $3);
-		if (string_defined) {
-			string_defined = 0;
-			instr_add("AFC", "R0", buffer, "", &instr_count);
-			sprintf(buffer, "%d", pos);
-			instr_add("STORE", buffer, "R0", "", &instr_count);
-			//sprintf(buffer, "%d", $3);
-			//instr_add("PRINT", buffer, "", "", &instr_count);
-		} else {
-			instr_add("LOAD", "R0", buffer, "", &instr_count);
-			sprintf(buffer, "%d", pos);
-			instr_add("STORE", buffer, "R0", "", &instr_count);
-		}
+		sprintf(buffer, "%d", $3);		
+		instr_add("LOAD", "R0", buffer, "", &instr_count);
+		sprintf(buffer, "%d", pos);
+		instr_add("STORE", buffer, "R0", "", &instr_count);
 		st_init($1);
 	};
 
@@ -160,16 +151,17 @@ Assignment_sugar:
 // XXX
 Print:
 /*	tPRINT_FUNC tBEGIN_PARENTHESIS tSTRING tEND_PARENTHESIS{} | */
-	tPRINT_FUNC tBEGIN_PARENTHESIS tID tEND_PARENTHESIS
+	tPRINT_FUNC tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS
 	{
 		printf("Printf\n");
-		int pos = st_get($3);
+		/*int pos = st_get($3);
 		if (pos == SYMBOL_NOT_FOUND) {
 			sprintf(buffer, "Symbol '%s' not found\n", $3);
 			yyerror(buffer);
-		}
+		}*/
 		
-		sprintf(buffer, "%d", pos);
+		//sprintf(buffer, "%d", pos);
+		sprintf(buffer, "%d", $3);
 		instr_add("AFC", "R0", buffer, "", &instr_count);
 		instr_add("LOADI", "R1", "R0", "", &instr_count);
 		instr_add("PRINT", "R1", "", "", &instr_count);
@@ -265,16 +257,23 @@ Expr:
 	}
 	| tSTRING
 	{
-		if (!string_defined) {
+		// XXX: disabled string checking
+		/*if (!string_defined) {
 			sprintf(buffer, "Strings must be assigned through definition\n");
 			yyerror(buffer);
-		}
+		}*/
+		
+		// Store pointer
+		st_add("", STRING, depth);
+		sprintf(buffer, "%d", st_get_pos());
+		instr_add("AFC", "R0", buffer, "", &instr_count);
+		sprintf(buffer, "%d", st_get_pos() - 1);
+		instr_add("STORE", buffer, "R0", "", &instr_count);
+		$$ = st_get_pos() - 1;
 		
 		char str[64];
 		sprintf(str, "%s", $1);
 		printf("<<<<string: %s len=%d\n", str, strlen(str));
-		
-		$$ = st_get_pos();
 		
 		// Store string char by char into memory and into symbol table
 		int i;
@@ -447,7 +446,6 @@ Expr:
 		// Get targeted value
 		instr_add("LOADI", "R0", "R0", "", &instr_count);
 		
-		// XXX
 		// Save to stack
 		st_add("", INTEGER, depth);
 		$$ = st_get_pos() - 1;
