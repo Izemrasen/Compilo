@@ -1,13 +1,16 @@
 Compiler
-	Print
-		Support for raw strings and addresses (&xxx)
+	Bug w/ "++" && "--" (var to be inc/dec is overwritten)
+		I think it's because there's st_set_pos-- somewhere (we assure we are on top of stack but nooo)
+	Debug pointers
+	Sugar assignment
 	Expressions
 		Add "&ID"
 	Cleaning
 		Clean symtable.*
 		st_get: instead of using yyerror() each time, put error handling in symtable.c
+		free symbols whenever possible
 	Find name for compiler
-		Ideas: Rick, Prick, Compote, CompiRiiiiick
+		Ideas: CompOte
 	Test "for"
 	Make use of "initialized" flag (error etc.)
 Interpreter

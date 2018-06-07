@@ -23,6 +23,8 @@ CHARACTER [a-zA-Z_0-9]
 "void" { return tVOID;}
 "int" { return tINTEGER_TYPE;}
 "string" { return tSTRING_TYPE;}
+"++" { return tINCREMENT;}
+"--" { return tDECREMENT;}
 "+" { return tPLUS;}
 "-" { return tMINUS;}
 "*" { return tMULTIPLY;}

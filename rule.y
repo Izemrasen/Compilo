@@ -27,17 +27,17 @@ int instr_count2 = 0;
 	int nb;
 }
 
-%token tINTEGER_TYPE tSTRING_TYPE tCONSTANT tNUMBER tSTRING tID tVOID 
+%token tINTEGER_TYPE tSTRING_TYPE tCONSTANT tNUMBER tSTRING tID tVOID
 %token tIF tELSE tWHILE tFOR tMAIN tRETURN
 %token tCOMMA tBEGIN_PARENTHESIS tEND_PARENTHESIS tBEGIN_BLOCK tEND_BLOCK 
 %token tEND_OF_INSTRUCTION tPRINT_FUNC tQUOTE
-%token tPLUS tMINUS tMULTIPLY tDIVIDE tADDRESS tASSIGN tGT tGTE tLT tLTE tEQUALITY
+%token tINCREMENT tDECREMENT tPLUS tMINUS tMULTIPLY tDIVIDE tADDRESS tASSIGN tGT tGTE tLT tLTE tEQUALITY
 
 // TODO: rm tInteger etc.
 %type <str> tID tINTEGER_TYPE tSTRING_TYPE tCONSTANT tSTRING
 %type <nb> tNUMBER Expr
 
-
+%left tINCREMENT tDECREMENT
 %left tPLUS tMINUS
 %left tMULTIPLY tDIVIDE
 %left tNEG
@@ -69,6 +69,7 @@ Instr:
 	Definition tEND_OF_INSTRUCTION
 	| Dereference tEND_OF_INSTRUCTION
 	| Assignment tEND_OF_INSTRUCTION
+	| Assignment_sugar tEND_OF_INSTRUCTION
 	| Print tEND_OF_INSTRUCTION
 	| tEND_OF_INSTRUCTION;
 
@@ -136,31 +137,58 @@ Assignment:
 			yyerror(buffer);
 		}
 		
-		sprintf(buffer, "%d", $3);		
+		sprintf(buffer, "%d", $3);
 		instr_add("LOAD", "R0", buffer, "", &instr_count);
 		sprintf(buffer, "%d", pos);
 		instr_add("STORE", buffer, "R0", "", &instr_count);
 		st_init($1);
 	};
 
-// TODO: test 
-Assignment_sugar:
-	tID tPLUS tPLUS
-	| tID tMINUS tMINUS;
-
 // XXX
+Assignment_sugar_inc:
+	tID tINCREMENT { sprintf(buffer, "%s", $1); }
+	| tINCREMENT tID { sprintf(buffer, "%s", $2); };
+
+Assignment_sugar_dec:
+	tID tDECREMENT { sprintf(buffer, "%s", $1); }
+	| tDECREMENT tID { sprintf(buffer, "%s", $2); };
+
+Assignment_sugar:
+	Assignment_sugar_inc
+	{
+		printf("bloody buffer: %s\n", buffer);
+		int pos = st_get(buffer);
+		if (pos == SYMBOL_NOT_FOUND) {
+			sprintf(buffer, "Symbol '%s' not found\n", buffer);
+			yyerror(buffer);
+		}
+		sprintf(buffer, "%d", pos);
+		instr_add("LOAD", "R0", buffer, "", &instr_count);
+		instr_add("AFC", "R1", "1", "", &instr_count);
+		instr_add("ADD", "R0", "R0", "R1", &instr_count);
+		instr_add("STORE", buffer, "R0", "", &instr_count);
+		st_add("", INTEGER, depth);
+	}
+	|
+	Assignment_sugar_dec
+	{
+		int pos = st_get(buffer);
+		if (pos == SYMBOL_NOT_FOUND) {
+			sprintf(buffer, "Symbol '%s' not found\n", buffer);
+			yyerror(buffer);
+		}
+		sprintf(buffer, "%d", pos);
+		instr_add("LOAD", "R0", buffer, "", &instr_count);
+		instr_add("AFC", "R1", "1", "", &instr_count);
+		instr_add("SOU", "R0", "R0", "R1", &instr_count);
+		instr_add("STORE", buffer, "R0", "", &instr_count);
+		st_add("", INTEGER, depth);
+	};
+
 Print:
-/*	tPRINT_FUNC tBEGIN_PARENTHESIS tSTRING tEND_PARENTHESIS{} | */
 	tPRINT_FUNC tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS
 	{
 		printf("Printf\n");
-		/*int pos = st_get($3);
-		if (pos == SYMBOL_NOT_FOUND) {
-			sprintf(buffer, "Symbol '%s' not found\n", $3);
-			yyerror(buffer);
-		}*/
-		
-		//sprintf(buffer, "%d", pos);
 		sprintf(buffer, "%d", $3);
 		instr_add("AFC", "R0", buffer, "", &instr_count);
 		instr_add("LOADI", "R1", "R0", "", &instr_count);
@@ -244,8 +272,7 @@ Expr:
 		printf("Expr w/ parentheses!!!\n");
 		$$ = $2;
 	}
-	|
-	tNUMBER
+	| tNUMBER
 	{
 		sprintf(buffer, "%d", $1);
 		instr_add("AFC", "R0", buffer, "", &instr_count);
@@ -319,7 +346,12 @@ Expr:
 	}
 	| tID
 	{
-		sprintf(buffer, "%d", st_get($1));
+		int pos = st_get($1);
+		if (pos == SYMBOL_NOT_FOUND) {
+			sprintf(buffer, "Symbol '%s' not found\n", buffer);
+			yyerror(buffer);
+		}
+		sprintf(buffer, "%d", pos);
 		instr_add("LOAD", "R0", buffer, "", &instr_count);
 		st_add("", INTEGER, depth);
 		$$ = st_get_pos() - 1;
@@ -328,6 +360,7 @@ Expr:
 	}
 	| Expr tPLUS Expr
 	{
+		printf("<<<gooood\n");
 		sprintf(buffer, "%d", $1);
 		instr_add("LOAD", "R0", buffer, "", &instr_count);
 		sprintf(buffer, "%d", $3);
@@ -335,7 +368,7 @@ Expr:
 		instr_add("ADD", "R0", "R0", "R1", &instr_count);
 		sprintf(buffer, "%d", $1);
 		instr_add("STORE", buffer, "R0", "", &instr_count);
-		// liberer une variable tmp (decrementer l'indice dans table des symboles)
+		// Free temp var
 		st_set_pos(st_get_pos() - 1);
 		$$ = $1;
 	}
@@ -451,6 +484,76 @@ Expr:
 		$$ = st_get_pos() - 1;
 		sprintf(buffer, "%d", $$);
 		instr_add("STORE", buffer, "R0", "", &instr_count);
+	}
+	| tINCREMENT tID
+	{
+		// XXX: BUG; do not return $$ = old var!!! Create a new one instead
+		int pos = st_get($2);
+		if (pos == SYMBOL_NOT_FOUND) {
+			sprintf(buffer, "Symbol '%s' not found\n", buffer);
+			yyerror(buffer);
+		}
+		sprintf(buffer, "%d", pos);
+		instr_add("LOAD", "R0", buffer, "", &instr_count);
+		instr_add("AFC", "R1", "1", "", &instr_count);
+		instr_add("ADD", "R1", "R0", "R1", &instr_count);
+		instr_add("STORE", buffer, "R1", "", &instr_count);
+		st_add("", INTEGER, depth);
+		int pos2 = st_get_pos() - 1;
+		sprintf(buffer, "%d", pos2);
+		instr_add("STORE", buffer, "R1", "", &instr_count);
+		$$ = pos2;
+	}
+	| tID tINCREMENT // XXX: WTF bug w/ pointers (conflict with addition)
+	{
+		int pos = st_get($1);
+		if (pos == SYMBOL_NOT_FOUND) {
+			sprintf(buffer, "Symbol '%s' not found\n", buffer);
+			yyerror(buffer);
+		}
+		sprintf(buffer, "%d", pos);
+		instr_add("LOAD", "R0", buffer, "", &instr_count);
+		instr_add("AFC", "R1", "1", "", &instr_count);
+		instr_add("ADD", "R1", "R0", "R1", &instr_count);
+		instr_add("STORE", buffer, "R1", "", &instr_count);
+		st_add("", INTEGER, depth);
+		int pos2 = st_get_pos() - 1;
+		sprintf(buffer, "%d", pos2);
+		instr_add("STORE", buffer, "R0", "", &instr_count);
+		$$ = pos2;
+	}
+	| tDECREMENT tID
+	{
+		int pos = st_get($2);
+		if (pos == SYMBOL_NOT_FOUND) {
+			sprintf(buffer, "Symbol '%s' not found\n", buffer);
+			yyerror(buffer);
+		}
+		sprintf(buffer, "%d", pos);
+		instr_add("LOAD", "R0", buffer, "", &instr_count);
+		instr_add("AFC", "R1", "1", "", &instr_count);
+		instr_add("SOU", "R0", "R0", "R1", &instr_count);
+		instr_add("STORE", buffer, "R0", "", &instr_count);
+		$$ = pos;
+	}
+	| tID tDECREMENT
+	{
+		printf("<<<<<FUCK UUUUUU!!!\n");
+		int pos = st_get($1);
+		if (pos == SYMBOL_NOT_FOUND) {
+			sprintf(buffer, "Symbol '%s' not found\n", buffer);
+			yyerror(buffer);
+		}
+		sprintf(buffer, "%d", pos);
+		instr_add("LOAD", "R0", buffer, "", &instr_count);
+		instr_add("AFC", "R1", "1", "", &instr_count);
+		instr_add("SOU", "R1", "R0", "R1", &instr_count);
+		instr_add("STORE", buffer, "R1", "", &instr_count);
+		st_add("", INTEGER, depth);
+		int pos2 = st_get_pos() - 1;
+		sprintf(buffer, "%d", pos2);
+		instr_add("STORE", buffer, "R0", "", &instr_count);
+		$$ = pos2;
 	};
 
 %%
