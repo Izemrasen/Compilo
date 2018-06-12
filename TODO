@@ -1,8 +1,6 @@
+Interpreter
+	Implement "COP"
 Compiler
-	Bug w/ "++" && "--" (var to be inc/dec is overwritten)
-		I think it's because there's st_set_pos-- somewhere (we assure we are on top of stack but nooo)
-	Debug pointers
-	Sugar assignment
 	Expressions
 		Add "&ID"
 	Cleaning
@@ -12,10 +10,6 @@ Compiler
 	Find name for compiler
 		Ideas: CompOte
 	Test "for"
-	Make use of "initialized" flag (error etc.)
-Interpreter
-	Feature for parsing ASM && saving it into a binary
-		=> argument => better way of handling arguments (arg parser)
 Architecture
 	Implement instructions: LOADI, STOREI
 
@@ -24,6 +18,7 @@ BUGS
 
 EXTRA MVP
 	Optimisations
+		Avoid passing results via mem as much as possible
 		Instead of passing results via memory, pass it via registers (=> return registers used)
 		Distribute registers to avoid using the same repeatedly
 		Clear symbol table: rm anonym symbols, etc. (cf TODO)

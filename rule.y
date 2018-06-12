@@ -239,7 +239,7 @@ If_else_act:
 else_act:
 	{	
 		sprintf(buffer, "%d", st_get_pos() - 1);
-		instr_add("JMP", "-1", "R0", "", &instr_count);
+		instr_add("JMP", "-1", "", "", &instr_count);
 		instr_count = 0;
 	}
 
@@ -249,7 +249,7 @@ While:
 		// Patch jump instr
 		int pos = instr_count + 1;
 		sprintf(buffer, "%d", -pos - 10); // TODO: WARNING: this is a silly workaround
-		instr_add("JMP", buffer, "R0", "", &instr_count);
+		instr_add("JMP", buffer, "", "", &instr_count);
 		pos = instr_count + 1;
 		Instruction jumpc = instr_get(pos);
 		sprintf(buffer, "%d", pos - 1);
@@ -487,7 +487,6 @@ Expr:
 	}
 	| tINCREMENT tID
 	{
-		// XXX: BUG; do not return $$ = old var!!! Create a new one instead
 		int pos = st_get($2);
 		if (pos == SYMBOL_NOT_FOUND) {
 			sprintf(buffer, "Symbol '%s' not found\n", buffer);
@@ -504,7 +503,7 @@ Expr:
 		instr_add("STORE", buffer, "R1", "", &instr_count);
 		$$ = pos2;
 	}
-	| tID tINCREMENT // XXX: WTF bug w/ pointers (conflict with addition)
+	| tID tINCREMENT
 	{
 		int pos = st_get($1);
 		if (pos == SYMBOL_NOT_FOUND) {
@@ -538,7 +537,6 @@ Expr:
 	}
 	| tID tDECREMENT
 	{
-		printf("<<<<<FUCK UUUUUU!!!\n");
 		int pos = st_get($1);
 		if (pos == SYMBOL_NOT_FOUND) {
 			sprintf(buffer, "Symbol '%s' not found\n", buffer);
