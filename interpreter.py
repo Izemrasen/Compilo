@@ -82,7 +82,9 @@ def gen_bin(instrs):
 	elif op == 'DIV':
 		binary.extend([0x04, get_reg_num(a), get_reg_num(b), \
 			get_reg_num(c)])
-	# TODO: COP
+	elif op == 'COP':
+		binary.extend([0x05, get_reg_num(a), get_reg_num(b)])
+		binary.extend([0x00])
 	elif op == 'AFC':
 		b = int(b)
 		binary.extend([0x06, get_reg_num(a)])
@@ -173,7 +175,8 @@ def process(instrs):
 		val1 = get_reg(b)
 		val2 = get_reg(c)
 		set_reg(a, int(val1 / val2))
-	# TODO: COP
+	elif op == 'COP':
+		set_reg(a, get_reg(b))
 	elif op == 'AFC':
 		b = int(b)
 		set_reg(a, b)
