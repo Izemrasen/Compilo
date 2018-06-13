@@ -1,6 +1,20 @@
-Interpreter
-	Implement "COP"
 Compiler
+	Optimisations
+		Avoid passing results via mem as much as possible
+		symtable: free symbols whenever possible
+	Functions???
+		Chained list of symbol tables (current symtable <-> current function being called)
+			=> easily remove symbols when function returns
+		Store every function in a dedicated table w/ their addresses!!!
+		Call
+			for each param: create symbol in new table, then read Rx, then put it in symbol
+				next: read Rx + 1, etc. until x = N
+			OR easier: push/pop
+		Return
+			Before jumping into code, save instruction @ before jumping into R16 for instance
+				=> function for jumping from/to [R16]
+			Save return to R0
+			Remove current sym table, set parent sym table to current
 	Expressions
 		Add "&ID"
 	Cleaning
@@ -9,7 +23,6 @@ Compiler
 		free symbols whenever possible
 	Find name for compiler
 		Ideas: CompOte
-	Test "for"
 Architecture
 	Implement instructions: LOADI, STOREI
 

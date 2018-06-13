@@ -78,15 +78,15 @@ Block:
 	| While
 	| For ;
 
-Prefix: 
+Prefix:
 	Type { printf("Type\n"); prefix = 1; }
 	| tCONSTANT Type { printf("Constante\n"); prefix = 1; constant = 1; } ;
 	
-Type: 
+Type:
 	tINTEGER_TYPE { printf("Integer\n"); type = INTEGER; }
 	| tSTRING_TYPE { printf("String\n"); type = STRING; string_defined = 1; } ;
 
-Definition: 
+Definition:
 	Prefix tID
 	{
 		st_add($2, type, depth);
@@ -196,8 +196,25 @@ Print:
 	};
 
 For:
-	tFOR tBEGIN_PARENTHESIS Assignment tEND_OF_INSTRUCTION Expr tEND_OF_INSTRUCTION Assignment tEND_PARENTHESIS Body;
-	| tFOR tBEGIN_PARENTHESIS Assignment tEND_OF_INSTRUCTION Expr tEND_OF_INSTRUCTION Assignment_sugar tEND_PARENTHESIS Body;
+	tFOR tBEGIN_PARENTHESIS Assignment tEND_OF_INSTRUCTION Expr
+		{
+			sprintf(buffer, "%d", st_get_pos());
+			instr_add("LOAD", "R0", buffer, "", &instr_count);
+			instr_add("JMPC", "-1", "R0", "", &instr_count);
+			instr_count = 0;
+		}
+	tEND_OF_INSTRUCTION Assignment_sugar tEND_PARENTHESIS Body
+	{
+		// Patch jump instr
+		int pos = instr_count + 1;
+		sprintf(buffer, "%d", -pos - 10); // TODO: WARNING: this is a silly workaround
+		instr_add("JMP", buffer, "", "", &instr_count);
+		pos = instr_count + 1;
+		Instruction jumpc = instr_get(pos);
+		sprintf(buffer, "%d", pos - 1);
+		jumpc.a = strdup(buffer);
+		instr_set(pos, jumpc);
+	};
 
 If:
 	tIF tBEGIN_PARENTHESIS Expr tEND_PARENTHESIS If_act Body_if %prec tTRUC 
